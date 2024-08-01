@@ -1,0 +1,28 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>Edit Studio</title>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'sidebar.html' %}
+{% endblock %}
+
+{% block body %}
+<h2>Edit Studio</h2>
+<form method="POST" action="{{ url_for('studio.edit_studio') }}">
+    <label for="studio_name">Studio Name:</label>
+    <input type="text" id="studio_name" name="studio_name" value="{{ studio.name }}" required><br>
+
+    <label for="studio_country">Studio Country:</label>
+    <input type="text" id="studio_country" name="studio_country" value="{{ studio.country }}" required><br>
+
+    <label for="business_email">Business Email:</label>
+    <input type="email" id="business_email" name="business_email" value="{{ studio.business_email }}" required><br>
+
+    <label for="additional_info">Additional Info:</label>
+    <textarea id="additional_info" name="additional_info">{{ studio.additional_info }}</textarea><br>
+
+    <button type="submit">Update Studio</button>
+</form>
+{% endblock %}

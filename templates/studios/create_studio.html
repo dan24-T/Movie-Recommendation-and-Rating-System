@@ -1,0 +1,28 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>Create Studio</title>
+{% endblock %}
+
+{% block sidebar %}
+{% include 'sidebar.html' %}
+{% endblock %}
+
+{% block body %}
+<h2>Create Studio</h2>
+<form method="post" action="{{ url_for('studio.create_studio') }}">
+    <label for="studio_name">Studio Name:</label>
+    <input type="text" id="studio_name" name="studio_name" required>
+    <br>
+    <label for="studio_country">Studio Country:</label>
+    <input type="text" id="studio_country" name="studio_country" required>
+    <br>
+    <label for="business_email">Business Email:</label>
+    <input type="email" id="business_email" name="business_email" required>
+    <br>
+    <label for="additional_info">Additional Info:</label>
+    <textarea id="additional_info" name="additional_info"></textarea>
+    <br>
+    <button type="submit">Create</button>
+</form>
+{% endblock %}

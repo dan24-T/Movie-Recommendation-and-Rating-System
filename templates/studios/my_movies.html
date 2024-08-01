@@ -1,0 +1,22 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>My Movies</title>
+{% endblock %}
+
+{% block sidebar %}
+{% include 'sidebar.html' %}
+{% endblock %}
+
+{% block body %}
+<h2>My Movies</h2>
+
+{% if studio %}
+    <p>Welcome to your studio!</p>
+    <!-- Placeholder for future movie list -->
+{% else %}
+    <p>Welcome! You have not created a studio yet.</p>
+    <a href="{{ url_for('studio.create_studio') }}">Create Studio</a>
+{% endif %}
+
+{% endblock %}

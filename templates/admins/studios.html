@@ -1,0 +1,58 @@
+{% extends 'admins/sidebar.html' %}
+
+{% block head %}
+<title>Admin - Studios</title>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .action-buttons form {
+        display: inline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Studios Management</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Studio Name</th>
+            <th>Owner</th>
+            <th>Date Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for studio in studios %}
+        <tr>
+            <td>{{ studio.name }}</td>
+            <td>{{ studio.username }}</td>
+            <td>{{ studio.created_at }}</td>
+            <td class="action-buttons">
+                {% if not studio.is_verified %}
+                <form action="{{ url_for('admin.verify_studio', studio_id=studio.id) }}" method="post">
+                    <button type="submit">Verify</button>
+                </form>
+                {% endif %}
+                <form action="{{ url_for('admin.delete_studio', studio_id=studio.id) }}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

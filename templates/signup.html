@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Sign Up</title>
+<style>
+    .valid {
+        color: green;
+    }
+    .invalid {
+        color: red;
+    }
+    #criteria {
+            display: none;
+    }
+    #match_criteria {
+            display: none;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+<h2>Signup</h2>
+    <form method="post" action="/signup/" onsubmit="return validatePassword()">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+              <li class="flash-{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" onkeyup="validatePassword()" required><br>
+
+        <ul id="criteria">
+            <li id="length" class="invalid">At least 8 characters</li>
+            <li id="uppercase" class="invalid">At least one uppercase letter</li>
+            <li id="lowercase" class="invalid">At least one lowercase letter</li>
+            <li id="number" class="invalid">At least one number</li>
+            <li id="special" class="invalid">At least one special character</li>
+        </ul>
+
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" onkeyup="validateMatchPassword()" required><br>
+
+        <ul id="match_criteria">
+            <li id="match" class="invalid">Passwords match</li>
+        </ul>
+
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" required><br>
+
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select><br>
+
+        <button type="submit" id="submit">Signup</button>
+        <p id="message" style="color: red;"></p>
+    </form>
+    <p>Already have an account? <a href="/login/">Login here</a></p>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>Studio Home</title>
+{% endblock %}
+
+{% block sidebar %}
+{% include 'sidebar.html' %}
+{% endblock %}
+
+{% block body %}
+<h2>Studio Home</h2>
+{% if studio %}
+    <p>Studio Name: {{ studio.name }}</p>
+    <p>Studio Country: {{ studio.country }}</p>
+    <p>Business Email: {{ studio.business_email }}</p>
+    <p>Additional Info: {{ studio.additional_info }}</p>
+    <p>Created Date: {{ studio.created_date }}</p>
+    <p>Verified: {{ 'Yes' if studio.verified else 'No' }}</p>
+    <a href="{{ url_for('studio.edit_studio') }}">Edit Studio</a>
+{% else %}
+    <a href="{{ url_for('studio.create_studio') }}">Create Studio</a>
+{% endif %}
+{% endblock %}

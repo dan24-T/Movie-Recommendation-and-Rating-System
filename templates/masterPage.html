@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}{% endblock %}
+    <style>
+        .flash-success {
+            color: green;
+        }
+        .flash-error {
+            color: red;
+        }
+        .nav {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('studio.studio_home') }}">Studio</a>
+    </div>
+    {% block sidebar %}{% endblock %}
+    {% block body %}{% endblock %}
+</body>
+</html>

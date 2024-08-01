@@ -1,0 +1,17 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>Studio Details</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Studio Details</h1>
+    <p><strong>Studio Name:</strong> {{ studio.name }}</p>
+    <p><strong>Country:</strong> {{ studio.country }}</p>
+    <p><strong>Business Email:</strong> {{ studio.business_email }}</p>
+    <p><strong>Created At:</strong> {{ studio.created_at }}</p>
+    <p><strong>Status:</strong> {{ 'Verified' if studio.is_verified else 'Not Verified' }}</p>
+    <a href="{{ url_for('studio.edit_studio') }}">Edit Studio</a>
+</div>
+{% endblock %}
