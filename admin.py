@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, url_for, request, flash, redirect,
 from database import get_db_connection
 import math
 
-# Create a Blueprint for admin-related routes
+# Create a Blueprint for admin-related
 admin = Blueprint('admin', __name__)
 
 @admin.route('/admin/')
