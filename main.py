@@ -1,11 +1,11 @@
-from flask import *
+from flask import Flask, redirect, url_for, session, flash, render_template
 import os
 import sqlite3
 
 # Import Blueprints
 from auth import auth
 from admin import admin
-from studio import studio
+from studio import studio_bp
 from database import init_db
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ app.secret_key = os.urandom(24)
 # Register Blueprints
 app.register_blueprint(auth)
 app.register_blueprint(admin)
-app.register_blueprint(studio)
+app.register_blueprint(studio_bp)
 
 init_db()
 

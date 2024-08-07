@@ -116,7 +116,7 @@ def admin_studios():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('''
-        SELECT s.id, s.name, s.country, s.business_email, s.created_at, s.is_verified, u.username 
+        SELECT s.id, s.studio_name, s.studio_country, s.business_email, s.created_at, s.verified, u.username 
         FROM studios s 
         JOIN users u ON s.user_id = u.id
     ''')
@@ -142,6 +142,7 @@ def verify_studio(studio_id):
 
     flash('Studio verified successfully.', 'success')
     return redirect(url_for('admin.admin_studios'))
+
 
 @admin.route('/admin/delete_studio/<int:studio_id>/', methods=['POST'])
 def delete_studio(studio_id):

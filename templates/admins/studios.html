@@ -1,58 +1,48 @@
 {% extends 'admins/sidebar.html' %}
 
 {% block head %}
-<title>Admin - Studios</title>
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    table, th, td {
-        border: 1px solid black;
-    }
-    th, td {
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
-    .action-buttons form {
-        display: inline;
-    }
-</style>
+<title>Admin - Manage Studios</title>
 {% endblock %}
 
 {% block content %}
-<h1>Studios Management</h1>
-
-<table>
-    <thead>
-        <tr>
-            <th>Studio Name</th>
-            <th>Owner</th>
-            <th>Date Created</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for studio in studios %}
-        <tr>
-            <td>{{ studio.name }}</td>
-            <td>{{ studio.username }}</td>
-            <td>{{ studio.created_at }}</td>
-            <td class="action-buttons">
-                {% if not studio.is_verified %}
-                <form action="{{ url_for('admin.verify_studio', studio_id=studio.id) }}" method="post">
-                    <button type="submit">Verify</button>
-                </form>
-                {% endif %}
-                <form action="{{ url_for('admin.delete_studio', studio_id=studio.id) }}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container">
+    <h1>Manage Studios</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Business Email</th>
+                <th>Created At</th>
+                <th>Verified</th>
+                <th>Owner</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for studio in studios %}
+            <tr>
+                <td>{{ studio[0] }}</td>
+                <td>{{ studio[1] }}</td>
+                <td>{{ studio[2] }}</td>
+                <td>{{ studio[3] }}</td>
+                <td>{{ studio[4] }}</td>
+                <td>{{ 'Yes' if studio[5] else 'No' }}</td>
+                <td>{{ studio[6] }}</td>
+                <td>
+                    {% if not studio[5] %}
+                    <form method="POST" action="{{ url_for('admin.verify_studio', studio_id=studio[0]) }}">
+                        <button type="submit" class="btn btn-secondary">Verify</button>
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('admin.delete_studio', studio_id=studio[0]) }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

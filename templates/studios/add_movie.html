@@ -1,91 +1,62 @@
 {% extends 'masterPage.html' %}
+
 {% block head %}
 <title>Add Movie</title>
-<style>
-    .form-container {
-        width: 60%;
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-    .form-container h2 {
-        text-align: center;
-    }
-    .form-container label {
-        display: block;
-        margin-bottom: 5px;
-    }
-    .form-container input[type="text"],
-    .form-container input[type="number"],
-    .form-container input[type="date"],
-    .form-container textarea {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    .form-container button {
-        width: 100%;
-        padding: 10px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .form-container button:hover {
-        background-color: #45a049;
-    }
-</style>
 {% endblock %}
 
 {% block body %}
-<div class="form-container">
-    <h2>Add New Movie</h2>
-    <form action="{{ url_for('studio.add_movie') }}" method="post">
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" required>
-
-        <label for="budget">Budget</label>
-        <input type="number" id="budget" name="budget">
-
-        <label for="genres">Genres</label>
-        <input type="text" id="genres" name="genres">
-
-        <label for="homepage">Homepage</label>
-        <input type="text" id="homepage" name="homepage">
-
-        <label for="keywords">Keywords</label>
-        <input type="text" id="keywords" name="keywords">
-
-        <label for="overview">Overview</label>
-        <textarea id="overview" name="overview"></textarea>
-
-        <label for="production_companies">Production Companies</label>
-        <input type="text" id="production_companies" name="production_companies">
-
-        <label for="production_countries">Production Countries</label>
-        <input type="text" id="production_countries" name="production_countries">
-
-        <label for="release_date">Release Date</label>
-        <input type="date" id="release_date" name="release_date">
-
-        <label for="revenue">Revenue</label>
-        <input type="number" id="revenue" name="revenue">
-
-        <label for="runtime">Runtime</label>
-        <input type="number" id="runtime" name="runtime">
-
-        <label for="spoken_languages">Spoken Languages</label>
-        <input type="text" id="spoken_languages" name="spoken_languages">
-
-        <label for="tagline">Tagline</label>
-        <input type="text" id="tagline" name="tagline">
-
-        <button type="submit">Add Movie</button>
+<div class="container">
+    <h1>Add Movie</h1>
+    <form method="POST" action="{{ url_for('studio.add_movie') }}">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="budget">Budget</label>
+            <input type="number" class="form-control" id="budget" name="budget" required>
+        </div>
+        <div class="form-group">
+            <label for="genres">Genres</label>
+            <input type="text" class="form-control" id="genres" name="genres" required>
+        </div>
+        <div class="form-group">
+            <label for="homepage">Homepage</label>
+            <input type="url" class="form-control" id="homepage" name="homepage">
+        </div>
+        <div class="form-group">
+            <label for="overview">Overview</label>
+            <textarea class="form-control" id="overview" name="overview" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="release_date">Release Date</label>
+            <input type="date" class="form-control" id="release_date" name="release_date" required>
+        </div>
+        <div class="form-group">
+            <label for="revenue">Revenue</label>
+            <input type="number" class="form-control" id="revenue" name="revenue" required>
+        </div>
+        <div class="form-group">
+            <label for="runtime">Runtime</label>
+            <input type="number" class="form-control" id="runtime" name="runtime" required>
+        </div>
+        <div class="form-group">
+            <label for="spoken_languages">Spoken Languages</label>
+            <input type="text" class="form-control" id="spoken_languages" name="spoken_languages" required>
+        </div>
+        <div class="form-group">
+            <label for="tagline">Tagline</label>
+            <input type="text" class="form-control" id="tagline" name="tagline" required>
+        </div>
+        <div class="form-group">
+            <label for="poster_path">Poster Path</label>
+            <input type="text" class="form-control" id="poster_path" name="poster_path" required>
+        </div>
+        <div class="form-group">
+            <label for="backdrop_path">Backdrop Path</label>
+            <input type="text" class="form-control" id="backdrop_path" name="backdrop_path" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Movie</button>
     </form>
 </div>
 {% endblock %}

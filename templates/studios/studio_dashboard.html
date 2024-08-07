@@ -1,0 +1,19 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>Studio Dashboard</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Studio Dashboard</h1>
+    <div class="studio-details">
+        <h2>{{ studio.studio_name }}</h2>
+        <p>Country: {{ studio.studio_country }}</p>
+        <p>Business Email: {{ studio.business_email }}</p>
+        <p>Created At: {{ studio.created_at }}</p>
+        <p>Verified: {{ studio.verified }}</p>
+    </div>
+    <a href="{{ url_for('studio.my_movies') }}" class="btn btn-primary">My Movies</a>
+</div>
+{% endblock %}
