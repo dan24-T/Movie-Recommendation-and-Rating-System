@@ -103,3 +103,51 @@ def my_movies():
     conn.close()
 
     return render_template('studios/my_movies.html', studio=studio)
+
+@studio.route('/studio/add_movie', methods=['GET', 'POST'])
+def add_movie():
+    """
+    Route to add a new movie.
+    """
+    if 'user_id' not in session:
+        flash('User ID is missing in session.', 'error')
+        return redirect(url_for('auth.login'))
+
+    if request.method == 'POST':
+        title = request.form['title']
+        budget = request.form['budget']
+        genres = request.form['genres']
+        homepage = request.form['homepage']
+        keywords = request.form['keywords']
+        overview = request.form['overview']
+        production_companies = request.form['production_companies']
+        production_countries = request.form['production_countries']
+        release_date = request.form['release_date']
+        revenue = request.form['revenue']
+        runtime = request.form['runtime']
+        spoken_languages = request.form['spoken_languages']
+        tagline = request.form['tagline']
+
+        # Set default values for fields that are no longer part of the form
+        original_language = spoken_languages
+        original_title = title
+        status = 'New'
+        popularity = 0
+        vote_average = 0
+        vote_count = 0
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO movies (title, budget, genres, homepage, keywords, original_language, original_title, overview, popularity, 
+                                production_companies, production_countries, release_date, revenue, runtime, spoken_languages, status, 
+                                tagline, vote_average, vote_count) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (title, budget, genres, homepage, keywords, original_language, original_title, overview, popularity, production_companies,
+              production_countries, release_date, revenue, runtime, spoken_languages, status, tagline, vote_average, vote_count))
+        conn.commit()
+        conn.close()
+        flash('Movie added successfully!', 'success')
+        return redirect(url_for('studio.my_movies'))
+
+    return render_template('studios/add_movie.html')
