@@ -71,7 +71,7 @@ def edit_studio():
         studio_country = request.form['studio_country']
         business_email = request.form['business_email']
         
-        cur.execute("UPDATE studios SET name = ?, country = ?, business_email = ? WHERE user_id = ?",
+        cur.execute("UPDATE studios SET studio_name = ?, studio_country = ?, business_email = ? WHERE user_id = ?",
                     (studio_name, studio_country, business_email, user_id))
         conn.commit()
         conn.close()
@@ -93,9 +93,17 @@ def my_movies():
     cur = conn.cursor()
     cur.execute("SELECT * FROM studios WHERE user_id = ?", (user_id,))
     studio = cur.fetchone()
+    
+    if studio:
+        studio_id = studio['id']
+        cur.execute("SELECT * FROM movies WHERE studio_id = ?", (studio_id,))
+        movies = cur.fetchall()
+    else:
+        movies = []
+    
     conn.close()
 
-    return render_template('studios/my_movies.html', studio=studio)
+    return render_template('studios/my_movies.html', studio=studio, movies=movies)
 
 @studio_bp.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():
@@ -116,17 +124,25 @@ def add_movie():
         tagline = request.form['tagline']
         poster_path = request.form['poster_path']
         backdrop_path = request.form['backdrop_path']
-
+        user_id = session['user_id']
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('''
-            INSERT INTO movies (title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path))
-        conn.commit()
+        cur.execute("SELECT id FROM studios WHERE user_id = ?", (user_id,))
+        studio = cur.fetchone()
+        
+        if studio:
+            studio_id = studio['id']
+            cur.execute('''
+                INSERT INTO movies (title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path, studio_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path, studio_id))
+            conn.commit()
+            flash('Movie added successfully!', 'success')
+        else:
+            flash('Studio not found for the user.', 'error')
+        
         conn.close()
-
-        flash('Movie added successfully!', 'success')
         return redirect(url_for('studio.my_movies'))
 
     return render_template('studios/add_movie.html')

@@ -11,15 +11,15 @@ def init_db():
     
     # Create users table if it doesn't exist
     cur.execute('''
-    CREATE TABLE IF NOT EXISTS studios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        studio_name TEXT NOT NULL,
-        studio_country TEXT NOT NULL,
-        business_email TEXT NOT NULL,
-        user_id TEXT NOT NULL,
-        created_at TEXT NOT NULL,
-        verified INTEGER NOT NULL
-    )
+        CREATE TABLE IF NOT EXISTS studios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            studio_name TEXT NOT NULL,
+            studio_country TEXT NOT NULL,
+            business_email TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            verified INTEGER NOT NULL
+        )
     ''')
 
     cur.execute('''
@@ -56,7 +56,9 @@ def init_db():
             status TEXT,
             popularity REAL DEFAULT 0,
             poster_path TEXT,
-            backdrop_path TEXT
+            backdrop_path TEXT,
+            studio_id INTEGER,
+            FOREIGN KEY (studio_id) REFERENCES studios(id)
         )
     ''')
     
