@@ -95,41 +95,48 @@ def delete_user(user_id):
 @admin.route('/admin/movies/')
 def admin_movies():
     """
-    Admin movies management route.
-    Display all movies with pagination for admin.
+    Admin movies management route with sorting and pagination.
     """
     if 'username' not in session or not session.get('is_admin'):
         flash('Unauthorized access.', 'error')
         return redirect(url_for('auth.login'))
-
+    
     search_query = request.args.get('search', '')
+    sort_by = request.args.get('sort_by', 'title')  # Default sort by title
+    sort_order = request.args.get('sort_order', 'asc')  # Default sort order is ascending
     per_page = int(request.args.get('per_page', 5))
     page = int(request.args.get('page', 1))
     offset = (page - 1) * per_page
 
     conn = get_db_connection()
     cur = conn.cursor()
-
+    
     if search_query:
-        cur.execute("SELECT COUNT(*) FROM movies WHERE title LIKE ?", (f"%{search_query}%",))
+        query = f"""
+        SELECT COUNT(*) FROM movies WHERE title LIKE ? OR overview LIKE ?
+        """
+        cur.execute(query, (f"%{search_query}%", f"%{search_query}%"))
         total_movies = cur.fetchone()[0]
-        cur.execute("SELECT * FROM movies WHERE title LIKE ? LIMIT ? OFFSET ?", (f"%{search_query}%", per_page, offset))
+
+        query = f"""
+        SELECT * FROM movies WHERE title LIKE ? OR overview LIKE ?
+        ORDER BY {sort_by} {sort_order} LIMIT ? OFFSET ?
+        """
+        cur.execute(query, (f"%{search_query}%", f"%{search_query}%", per_page, offset))
     else:
-        cur.execute("SELECT COUNT(*) FROM movies")
+        query = f"SELECT COUNT(*) FROM movies"
+        cur.execute(query)
         total_movies = cur.fetchone()[0]
-        cur.execute("SELECT * FROM movies LIMIT ? OFFSET ?", (per_page, offset))
+
+        query = f"SELECT * FROM movies ORDER BY {sort_by} {sort_order} LIMIT ? OFFSET ?"
+        cur.execute(query, (per_page, offset))
 
     movies = cur.fetchall()
     conn.close()
-    
+
     total_pages = math.ceil(total_movies / per_page)
 
-    # Calculate page range to show
-    range_start = max(page - 2, 1)
-    range_end = min(page + 2, total_pages) + 1
-    page_range = range(range_start, range_end)
-
-    return render_template('admins/movies.html', movies=movies, search_query=search_query, per_page=per_page, page=page, total_pages=total_pages, page_range=page_range)
+    return render_template('admins/movies.html', movies=movies, search_query=search_query, sort_by=sort_by, sort_order=sort_order, per_page=per_page, page=page, total_pages=total_pages)
 
 
 @admin.route('/admin/delete_movie/<int:movie_id>/', methods=['POST'])
