@@ -5,6 +5,57 @@
 {% endblock %}
 
 {% block content %}
-<h1>Movies Management</h1>
-<!-- Add your studios management content here -->
+<h1>Admin Movies</h1>
+
+<form method="get" action="{{ url_for('admin.admin_movies') }}">
+    <input type="text" name="search" placeholder="Search by title" value="{{ search_query }}">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Release Date</th>
+            <th>Poster</th>
+            <th>Backdrop</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movie in movies %}
+        <tr>
+            <td>{{ movie['title'] }}</td>
+            <td>{{ movie['release_date'] }}</td>
+            <td><img src="https://image.tmdb.org/t/p/w92{{ movie['poster_path'] }}" alt="Poster"></td>
+            <td><img src="https://image.tmdb.org/t/p/w92{{ movie['backdrop_path'] }}" alt="Backdrop"></td>
+            <td>
+                <form action="{{ url_for('admin.delete_movie', movie_id=movie['id']) }}" method="post" style="display:inline-block;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('admin.admin_movies', search=search_query, per_page=per_page, page=1) }}">&laquo; First</a>
+    <a href="{{ url_for('admin.admin_movies', search=search_query, per_page=per_page, page=page-1) }}">&lsaquo; Previous</a>
+    {% endif %}
+
+    {% for p in page_range %}
+    {% if p == page %}
+    <strong>{{ p }}</strong>
+    {% else %}
+    <a href="{{ url_for('admin.admin_movies', search=search_query, per_page=per_page, page=p) }}">{{ p }}</a>
+    {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('admin.admin_movies', search=search_query, per_page=per_page, page=page+1) }}">Next &rsaquo;</a>
+    <a href="{{ url_for('admin.admin_movies', search=search_query, per_page=per_page, page=total_pages) }}">Last &raquo;</a>
+    {% endif %}
+</div>
 {% endblock %}

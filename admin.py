@@ -96,13 +96,60 @@ def delete_user(user_id):
 def admin_movies():
     """
     Admin movies management route.
+    Display all movies with pagination for admin.
     """
     if 'username' not in session or not session.get('is_admin'):
         flash('Unauthorized access.', 'error')
         return redirect(url_for('auth.login'))
+
+    search_query = request.args.get('search', '')
+    per_page = int(request.args.get('per_page', 5))
+    page = int(request.args.get('page', 1))
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if search_query:
+        cur.execute("SELECT COUNT(*) FROM movies WHERE title LIKE ?", (f"%{search_query}%",))
+        total_movies = cur.fetchone()[0]
+        cur.execute("SELECT * FROM movies WHERE title LIKE ? LIMIT ? OFFSET ?", (f"%{search_query}%", per_page, offset))
+    else:
+        cur.execute("SELECT COUNT(*) FROM movies")
+        total_movies = cur.fetchone()[0]
+        cur.execute("SELECT * FROM movies LIMIT ? OFFSET ?", (per_page, offset))
+
+    movies = cur.fetchall()
+    conn.close()
     
-    # Add logic to fetch movies from the database if needed
-    return render_template('admins/movies.html')
+    total_pages = math.ceil(total_movies / per_page)
+
+    # Calculate page range to show
+    range_start = max(page - 2, 1)
+    range_end = min(page + 2, total_pages) + 1
+    page_range = range(range_start, range_end)
+
+    return render_template('admins/movies.html', movies=movies, search_query=search_query, per_page=per_page, page=page, total_pages=total_pages, page_range=page_range)
+
+
+@admin.route('/admin/delete_movie/<int:movie_id>/', methods=['POST'])
+def delete_movie(movie_id):
+    """
+    Route to delete a movie.
+    """
+    if 'username' not in session or not session.get('is_admin'):
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('auth.login'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM movies WHERE id = ?", (movie_id,))
+    conn.commit()
+    conn.close()
+    
+    flash('Movie deleted successfully.', 'success')
+    return redirect(url_for('admin.admin_movies'))
+
 
 @admin.route('/admin/studios/', methods=['GET'])
 def admin_studios():
