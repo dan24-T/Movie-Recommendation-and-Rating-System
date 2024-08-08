@@ -1,0 +1,75 @@
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>Edit Movie</title>
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'sidebar.html' %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Edit Movie</h1>
+    <form method="post">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ movie['title'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="budget">Budget</label>
+            <input type="number" class="form-control" id="budget" name="budget" value="{{ movie['budget'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="genres">Genres</label>
+            <input type="text" class="form-control" id="genres" name="genres" value="{{ movie['genres'][1:-1] | replace("'", "") }}" required>
+        </div>
+        <div class="form-group">
+            <label for="homepage">Homepage</label>
+            <input type="url" class="form-control" id="homepage" name="homepage" value="{{ movie['homepage'] }}">
+        </div>
+        <div class="form-group">
+            <label for="overview">Overview</label>
+            <textarea class="form-control" id="overview" name="overview" required>{{ movie['overview'] }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="release_date">Release Date</label>
+            <input type="date" class="form-control" id="release_date" name="release_date" value="{{ movie['release_date'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="revenue">Revenue</label>
+            <input type="number" class="form-control" id="revenue" name="revenue" value="{{ movie['revenue'] }}">
+        </div>
+        <div class="form-group">
+            <label for="runtime">Runtime</label>
+            <input type="number" class="form-control" id="runtime" name="runtime" value="{{ movie['runtime'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="spoken_languages">Spoken Languages</label>
+            <input type="text" class="form-control" id="spoken_languages" name="spoken_languages" value="{{ movie['spoken_languages'][1:-1] | replace("'", "") }}" required>
+        </div>
+        <div class="form-group">
+            <label for="tagline">Tagline</label>
+            <input type="text" class="form-control" id="tagline" name="tagline" value="{{ movie['tagline'] }}">
+        </div>
+        <div class="form-group">
+            <label for="poster_path">Poster Path</label>
+            <input type="text" class="form-control" id="poster_path" name="poster_path" value="{{ movie['poster_path'] }}">
+            <img src="https://image.tmdb.org/t/p/w780{{ movie['poster_path'] }}" alt="Poster" style="width: 50px; height: auto;">
+        </div>
+        <div class="form-group">
+            <label for="backdrop_path">Backdrop Path</label>
+            <input type="text" class="form-control" id="backdrop_path" name="backdrop_path" value="{{ movie['backdrop_path'] }}">
+            <img src="https://image.tmdb.org/t/p/w780{{ movie['backdrop_path'] }}" alt="Backdrop" style="width: 50px; height: auto;">
+        </div>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status" required>
+                <option value="Released" {% if movie['status'] == 'Released' %}selected{% endif %}>Released</option>
+                <option value="Coming Soon" {% if movie['status'] == 'Coming Soon' %}selected{% endif %}>Coming Soon</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

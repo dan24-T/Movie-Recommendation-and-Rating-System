@@ -11,18 +11,18 @@
 {% block body %}
 <div class="container">
     <h1>Add Movie</h1>
-    <form method="POST" action="{{ url_for('studio.add_movie') }}">
+    <form method="post">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" class="form-control" id="title" name="title" required>
         </div>
         <div class="form-group">
             <label for="budget">Budget</label>
-            <input type="number" class="form-control" id="budget" name="budget" required>
+            <input type="number" class="form-control" id="budget" name="budget">
         </div>
         <div class="form-group">
-            <label for="genres">Genres</label>
-            <input type="text" class="form-control" id="genres" name="genres" required>
+            <label for="genres">Genres (comma-separated)</label>
+            <input type="text" class="form-control" id="genres" name="genres">
         </div>
         <div class="form-group">
             <label for="homepage">Homepage</label>
@@ -30,35 +30,42 @@
         </div>
         <div class="form-group">
             <label for="overview">Overview</label>
-            <textarea class="form-control" id="overview" name="overview" rows="3" required></textarea>
+            <textarea class="form-control" id="overview" name="overview"></textarea>
         </div>
         <div class="form-group">
             <label for="release_date">Release Date</label>
-            <input type="date" class="form-control" id="release_date" name="release_date" required>
+            <input type="date" class="form-control" id="release_date" name="release_date">
         </div>
         <div class="form-group">
             <label for="revenue">Revenue</label>
-            <input type="number" class="form-control" id="revenue" name="revenue" required>
+            <input type="number" class="form-control" id="revenue" name="revenue">
         </div>
         <div class="form-group">
             <label for="runtime">Runtime</label>
-            <input type="number" class="form-control" id="runtime" name="runtime" required>
+            <input type="number" class="form-control" id="runtime" name="runtime">
         </div>
         <div class="form-group">
-            <label for="spoken_languages">Spoken Languages</label>
-            <input type="text" class="form-control" id="spoken_languages" name="spoken_languages" required>
+            <label for="spoken_languages">Spoken Languages (comma-separated)</label>
+            <input type="text" class="form-control" id="spoken_languages" name="spoken_languages">
         </div>
         <div class="form-group">
             <label for="tagline">Tagline</label>
-            <input type="text" class="form-control" id="tagline" name="tagline" required>
+            <input type="text" class="form-control" id="tagline" name="tagline">
         </div>
         <div class="form-group">
             <label for="poster_path">Poster Path</label>
-            <input type="text" class="form-control" id="poster_path" name="poster_path" required>
+            <input class="form-control" id="poster_path" name="poster_path">
         </div>
         <div class="form-group">
             <label for="backdrop_path">Backdrop Path</label>
-            <input type="text" class="form-control" id="backdrop_path" name="backdrop_path" required>
+            <input class="form-control" id="backdrop_path" name="backdrop_path">
+        </div>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status">
+                <option value="released">Released</option>
+                <option value="coming soon">Coming Soon</option>
+            </select>
         </div>
         <button type="submit" class="btn btn-primary">Add Movie</button>
     </form>

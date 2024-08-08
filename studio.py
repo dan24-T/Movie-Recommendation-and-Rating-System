@@ -96,7 +96,7 @@ def my_movies():
     
     if studio:
         studio_id = studio['id']
-        cur.execute("SELECT * FROM movies WHERE studio_id = ?", (studio_id,))
+        cur.execute("SELECT id, title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path, status FROM movies WHERE studio_id = ?", (studio_id,))
         movies = cur.fetchall()
     else:
         movies = []
@@ -114,35 +114,92 @@ def add_movie():
     if request.method == 'POST':
         title = request.form['title']
         budget = request.form['budget']
-        genres = request.form['genres']
+        genres = request.form['genres'].split(',')
         homepage = request.form['homepage']
         overview = request.form['overview']
         release_date = request.form['release_date']
         revenue = request.form['revenue']
         runtime = request.form['runtime']
-        spoken_languages = request.form['spoken_languages']
+        spoken_languages = request.form['spoken_languages'].split(',')
         tagline = request.form['tagline']
         poster_path = request.form['poster_path']
         backdrop_path = request.form['backdrop_path']
+        status = request.form['status']
         user_id = session['user_id']
-        
+
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT id FROM studios WHERE user_id = ?", (user_id,))
-        studio = cur.fetchone()
-        
-        if studio:
-            studio_id = studio['id']
-            cur.execute('''
-                INSERT INTO movies (title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path, studio_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (title, budget, genres, homepage, overview, release_date, revenue, runtime, spoken_languages, tagline, poster_path, backdrop_path, studio_id))
-            conn.commit()
-            flash('Movie added successfully!', 'success')
-        else:
-            flash('Studio not found for the user.', 'error')
-        
+        cur.execute('''
+            INSERT INTO movies (title, budget, genres, homepage, overview, release_date, revenue, runtime, 
+                                spoken_languages, tagline, poster_path, backdrop_path, status, studio_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                    (SELECT id FROM studios WHERE user_id = ?))
+        ''', (title, budget, str(genres), homepage, overview, release_date, revenue, runtime, 
+              str(spoken_languages), tagline, poster_path, backdrop_path, status, user_id))
+        conn.commit()
         conn.close()
+
+        flash('Movie added successfully!', 'success')
         return redirect(url_for('studio.my_movies'))
 
     return render_template('studios/add_movie.html')
+
+
+@studio_bp.route('/edit_movie/<int:movie_id>', methods=['GET', 'POST'])
+def edit_movie(movie_id):
+    if 'user_id' not in session:
+        flash('User ID is missing in session.', 'error')
+        return redirect(url_for('auth.login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM movies WHERE id = ?", (movie_id,))
+    movie = cur.fetchone()
+    
+    if request.method == 'POST':
+        title = request.form['title']
+        budget = request.form['budget']
+        genres = request.form['genres'].split(',')
+        homepage = request.form['homepage']
+        overview = request.form['overview']
+        release_date = request.form['release_date']
+        revenue = request.form['revenue']
+        runtime = request.form['runtime']
+        spoken_languages = request.form['spoken_languages'].split(',')
+        tagline = request.form['tagline']
+        poster_path = request.form['poster_path']
+        backdrop_path = request.form['backdrop_path']
+        status = request.form['status']
+
+        cur.execute('''
+            UPDATE movies 
+            SET title = ?, budget = ?, genres = ?, homepage = ?, overview = ?, release_date = ?, 
+                revenue = ?, runtime = ?, spoken_languages = ?, tagline = ?, poster_path = ?, 
+                backdrop_path = ?, status = ?
+            WHERE id = ?
+        ''', (title, budget, str(genres), homepage, overview, release_date, revenue, runtime, str(spoken_languages), tagline, poster_path, backdrop_path, status, movie_id))
+        conn.commit()
+        conn.close()
+
+        flash('Movie updated successfully!', 'success')
+        return redirect(url_for('studio.my_movies'))
+
+    conn.close()
+    return render_template('studios/edit_movie.html', movie=movie)
+
+
+@studio_bp.route('/delete_movie/<int:movie_id>', methods=['POST'])
+def delete_movie(movie_id):
+    if 'user_id' not in session:
+        flash('User ID is missing in session.', 'error')
+        return redirect(url_for('auth.login'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM movies WHERE id = ?", (movie_id,))
+    conn.commit()
+    conn.close()
+
+    flash('Movie deleted successfully!', 'success')
+    return redirect(url_for('studio.my_movies'))
+

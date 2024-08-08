@@ -11,11 +11,42 @@
 {% block body %}
 <div class="container">
     <h1>My Movies</h1>
-    {% if studio %}
-        <p>Welcome to your movie studio!</p>
-        <a href="{{ url_for('studio.add_movie') }}" class="btn btn-primary">Add Movie</a>
-    {% else %}
-        <p>You need to <a href="{{ url_for('studio.create_studio') }}">create a studio</a> first.</p>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <a href="{{ url_for('studio.add_movie') }}" class="btn btn-primary">Add Movie</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Poster</th>
+                <th>Backdrop</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+            <tr>
+                <td>{{ movie['title'] }}</td>
+                <td><img src="https://image.tmdb.org/t/p/w780{{ movie['poster_path'] }}" alt="Poster" style="width: 50px; height: auto;"></td>
+                <td><img src="https://image.tmdb.org/t/p/w780{{ movie['backdrop_path'] }}" alt="Backdrop" style="width: 50px; height: auto;"></td>
+                <td>{{ movie['status'] }}</td>
+                <td>
+                    <a href="{{ url_for('studio.edit_movie', movie_id=movie['id']) }}" class="btn btn-warning">Edit</a>
+                    <form action="{{ url_for('studio.delete_movie', movie_id=movie['id']) }}" method="post" style="display:inline-block;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
