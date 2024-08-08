@@ -51,6 +51,37 @@ def create_studio():
 
     return render_template('studios/create_studio.html')
 
+@studio_bp.route('/studio/edit', methods=['GET', 'POST'])
+def edit_studio():
+    """
+    Route to edit an existing studio.
+    """
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('User ID is missing in session.', 'error')
+        return redirect(url_for('auth.login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM studios WHERE user_id = ?", (user_id,))
+    studio = cur.fetchone()
+    
+    if request.method == 'POST':
+        studio_name = request.form['studio_name']
+        studio_country = request.form['studio_country']
+        business_email = request.form['business_email']
+        
+        cur.execute("UPDATE studios SET name = ?, country = ?, business_email = ? WHERE user_id = ?",
+                    (studio_name, studio_country, business_email, user_id))
+        conn.commit()
+        conn.close()
+        
+        flash('Studio updated successfully!', 'success')
+        return redirect(url_for('studio.studio_home'))
+    
+    conn.close()
+    return render_template('studios/edit_studio.html', studio=studio)
+
 @studio_bp.route('/my_movies')
 def my_movies():
     if 'user_id' not in session:
@@ -64,11 +95,7 @@ def my_movies():
     studio = cur.fetchone()
     conn.close()
 
-    if studio:
-        return render_template('studios/my_movies.html')
-    else:
-        flash('You need to create a studio first.', 'error')
-        return redirect(url_for('studio.create_studio'))
+    return render_template('studios/my_movies.html', studio=studio)
 
 @studio_bp.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():

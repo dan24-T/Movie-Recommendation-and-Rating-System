@@ -4,16 +4,20 @@
 <title>Studio Dashboard</title>
 {% endblock %}
 
+{% block sidebar %}
+    {% include 'sidebar.html' %}
+{% endblock %}
+
 {% block body %}
-<div class="container">
-    <h1>Studio Dashboard</h1>
-    <div class="studio-details">
-        <h2>{{ studio.studio_name }}</h2>
-        <p>Country: {{ studio.studio_country }}</p>
-        <p>Business Email: {{ studio.business_email }}</p>
-        <p>Created At: {{ studio.created_at }}</p>
-        <p>Verified: {{ studio.verified }}</p>
-    </div>
-    <a href="{{ url_for('studio.my_movies') }}" class="btn btn-primary">My Movies</a>
-</div>
+<h2>Studio Home</h2>
+{% if studio %}
+    <p>Studio Name: {{ studio.studio_name }}</p>
+    <p>Studio Country: {{ studio.studio_country }}</p>
+    <p>Business Email: {{ studio.business_email }}</p>
+    <p>Created Date: {{ studio.created_date }}</p>
+    <p>Verified: {{ 'Yes' if studio.verified else 'No' }}</p>
+    <a href="{{ url_for('studio.edit_studio') }}">Edit Studio</a>
+{% else %}
+    <a href="{{ url_for('studio.create_studio') }}">Create Studio</a>
+{% endif %}
 {% endblock %}

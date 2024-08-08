@@ -30,28 +30,3 @@
     {% block body %}{% endblock %}
 </body>
 </html>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Welcome to Movie Studio{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('index') }}">Home</a></li>
-            {% if 'username' in session %}
-                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-            {% else %}
-                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                <li><a href="{{ url_for('auth.signup') }}">Sign Up</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% block body %}{% endblock %}
-</body>
-</html>
