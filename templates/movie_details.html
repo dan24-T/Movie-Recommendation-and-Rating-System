@@ -1,0 +1,17 @@
+<!-- movie_details.html -->
+{% extends 'masterPage.html' %}
+
+{% block head %}
+<title>{{ movie.title }} - Details</title>
+{% endblock %}
+
+{% block body %}
+<div class="movie-details-container">
+    <h1>{{ movie.title }}</h1>
+    <img src="https://image.tmdb.org/t/p/w500/{{ movie.backdrop_path }}" alt="{{ movie.title }}" style="width:100%; max-height:300px; object-fit:cover;">
+    <p><strong>Overview:</strong> {{ movie.overview }}</p>
+    <p><strong>Genres:</strong> {{ movie.genres | join(', ') }}</p>
+    <p><strong>Rating:</strong> {{ movie.vote_average }}</p>
+    <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+</div>
+{% endblock %}

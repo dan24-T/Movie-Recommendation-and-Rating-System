@@ -5,44 +5,100 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Manage Studios</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Country</th>
-                <th>Business Email</th>
-                <th>Created At</th>
-                <th>Verified</th>
-                <th>Owner</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for studio in studios %}
-            <tr>
-                <td>{{ studio[0] }}</td>
-                <td>{{ studio[1] }}</td>
-                <td>{{ studio[2] }}</td>
-                <td>{{ studio[3] }}</td>
-                <td>{{ studio[4] }}</td>
-                <td>{{ 'Yes' if studio[5] else 'No' }}</td>
-                <td>{{ studio[6] }}</td>
-                <td>
-                    {% if not studio[5] %}
-                    <form method="POST" action="{{ url_for('admin.verify_studio', studio_id=studio[0]) }}">
-                        <button type="submit" class="btn btn-secondary">Verify</button>
-                    </form>
+<h1>Studios Management</h1>
+
+<!-- Search and Filter Form -->
+<form method="GET" action="{{ url_for('admin.admin_studios') }}">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Search by studio name or country...">
+    
+    <!-- Sorting Options -->
+    <label for="sort_by">Sort by:</label>
+    <select name="sort_by" id="sort_by" onchange="this.form.submit()">
+        <option value="studio_name" {% if sort_by == 'studio_name' %}selected{% endif %}>Studio Name</option>
+        <option value="studio_country" {% if sort_by == 'studio_country' %}selected{% endif %}>Studio Country</option>
+        <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Created At</option>
+    </select>
+
+    <label for="sort_order">Order:</label>
+    <select name="sort_order" id="sort_order" onchange="this.form.submit()">
+        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+    </select>
+
+    <!-- Per Page Option -->
+    <label for="per_page">Show:</label>
+    <select name="per_page" id="per_page" onchange="this.form.submit()">
+        <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+        <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+        <option value="15" {% if per_page == 15 %}selected{% endif %}>15</option>
+        <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
+    </select>
+
+    <button type="submit">Apply</button>
+</form>
+
+<!-- Studios Table -->
+<table>
+    <thead>
+        <tr>
+            <th>
+                <a href="{{ url_for('admin.admin_studios', sort_by='studio_name', sort_order='asc' if sort_order == 'desc' else 'desc', search=search_query, per_page=per_page, page=page) }}">
+                    Studio Name
+                    {% if sort_by == 'studio_name' %}
+                        {% if sort_order == 'asc' %}↑{% else %}↓{% endif %}
                     {% endif %}
-                    <form method="POST" action="{{ url_for('admin.delete_studio', studio_id=studio[0]) }}">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </a>
+            </th>
+            <th>
+                <a href="{{ url_for('admin.admin_studios', sort_by='studio_country', sort_order='asc' if sort_order == 'desc' else 'desc', search=search_query, per_page=per_page, page=page) }}">
+                    Studio Country
+                    {% if sort_by == 'studio_country' %}
+                        {% if sort_order == 'asc' %}↑{% else %}↓{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for studio in studios %}
+        <tr>
+            <td>{{ studio['studio_name'] }}</td>
+            <td>{{ studio['studio_country'] }}</td>
+            <td>{{ studio['business_email'] }}</td>
+            <td>{{ studio['created_at'] }}</td>
+            <td>{{ 'Yes' if studio['verified'] else 'No' }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('admin.verify_studio', studio_id=studio['id']) }}" style="display:inline;">
+                    <button type="submit">
+                        {{ 'Unverify' if studio['verified'] else 'Verify' }}
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.delete_studio', studio_id=studio['id']) }}" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this studio?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+{% if total_pages > 1 %}
+<div>
+    <span>Page {{ page }} of {{ total_pages }}</span>
+    <div style="margin-top: 10px;">
+        {% if page > 1 %}
+            <a href="{{ url_for('admin.admin_studios', sort_by=sort_by, sort_order=sort_order, search=search_query, per_page=per_page, page=1) }}">First</a>
+            <a href="{{ url_for('admin.admin_studios', sort_by=sort_by, sort_order=sort_order, search=search_query, per_page=per_page, page=page-1) }}">Previous</a>
+        {% endif %}
+        {% if page < total_pages %}
+            <a href="{{ url_for('admin.admin_studios', sort_by=sort_by, sort_order=sort_order, search=search_query, per_page=per_page, page=page+1) }}">Next</a>
+            <a href="{{ url_for('admin.admin_studios', sort_by=sort_by, sort_order=sort_order, search=search_query, per_page=per_page, page=total_pages) }}">Last</a>
+        {% endif %}
+    </div>
 </div>
+{% endif %}
+
 {% endblock %}

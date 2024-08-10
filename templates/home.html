@@ -3,35 +3,97 @@
 {% block head %}
 <title>Home</title>
 <style>
-    .container {
+    .section {
+        margin: 20px 0;
+    }
+    .cards {
+        display: flex;
+        justify-content: space-around;
+    }
+    .card {
+        width: 18%;
         text-align: center;
-        margin-top: 50px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    .logo {
-        font-size: 48px;
+    .card img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+    .card p {
+        margin-top: 10px;
+        font-size: 16px;
         font-weight: bold;
-    }
-    .user-details {
-        margin-top: 20px;
-        font-size: 24px;
-    }
-    .logout-button {
-        margin-top: 20px;
     }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="container">
-    <div class="logo">VMax</div>
-    <div class="user-details">
-        <p>Username: {{ user.username }}</p>
-        <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+    <h1>Welcome, {{ user.first_name }}!</h1>
+    
+    <!-- Top Rated Movies -->
+    <div class="section">
+        <h2>Top Rated Movies</h2>
+        <div class="cards">
+            {% for _, row in top_rated.iterrows() %}
+                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
+                        <p>{{ row['title'] }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
     </div>
-    <div class="logout-button">
-        <form action="/logout/" method="post">
-            <button type="submit">Logout</button>
-        </form>
+
+    <!-- Action Movies -->
+    <div class="section">
+        <h2>Action Movies</h2>
+        <div class="cards">
+            {% for _, row in action_movies.iterrows() %}
+                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
+                        <p>{{ row['title'] }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
     </div>
+
+    <!-- Animation Movies -->
+    <div class="section">
+        <h2>Animation Movies</h2>
+        <div class="cards">
+            {% for _, row in animation_movies.iterrows() %}
+                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
+                        <p>{{ row['title'] }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Comedy Movies -->
+    <div class="section">
+        <h2>Comedy Movies</h2>
+        <div class="cards">
+            {% for _, row in comedy_movies.iterrows() %}
+                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                    <div class="card">
+                        <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
+                        <p>{{ row['title'] }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
 </div>
 {% endblock %}
