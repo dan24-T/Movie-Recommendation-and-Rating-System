@@ -22,7 +22,6 @@
             <div class="movie-card">
                 <img src="https://image.tmdb.org/t/p/w500/{{ movie.backdrop_path }}" alt="{{ movie.title }}" width="200">
                 <h4>{{ movie.title }}</h4>
-                <p>Genres: {{ movie.genres[1:-1].replace("'", "").replace(",", ", ") }}</p>
                 <a href="{{ url_for('movie_details', movie_id=movie.id) }}">View Details</a>
             </div>
     {% endfor %}

@@ -17,6 +17,7 @@ app.secret_key = os.urandom(24)
 app.register_blueprint(auth)
 app.register_blueprint(admin)
 app.register_blueprint(studio_bp)
+from recommendations import get_recommendations  # Import the recommendation function
 
 init_db()
 
@@ -328,17 +329,14 @@ def searched_movies():
     cur.execute("SELECT * FROM movies WHERE title LIKE ?", ('%' + query + '%',))
     searched_movies = cur.fetchall()
 
-    # Implement content-based filtering to find recommended movies
-    # For simplicity, this could be based on the genre or similar criteria.
     recommended_movies = []
     if searched_movies:
-        movie_genres = searched_movies[0][3]  # Assuming genres are in the 4th column
-        cur.execute("SELECT * FROM movies WHERE genres LIKE ? AND id != ?", ('%' + movie_genres + '%', searched_movies[0][0]))
-        recommended_movies = cur.fetchall()
+        movie_id = searched_movies[0][0]  # Assuming id is the first column
+        recommended_movies = get_recommendations(movie_id)
 
     conn.close()
 
-    # Convert the data to dictionaries (or leave as tuples if you're handling that in Jinja)
+    # Convert the searched movie data to dictionary format
     searched_movies = [
         {
             'id': movie[0],
@@ -346,19 +344,9 @@ def searched_movies():
             'backdrop_path': movie[16],  # Adjust based on your column order
             'release_date': movie[5],
             'genres': movie[3],
-            'vote_average': movie[4]
+            'vote_average': movie[4],
+            'overview': movie[6]  # Assuming overview is the 7th column
         } for movie in searched_movies
-    ]
-
-    recommended_movies = [
-        {
-            'id': movie[0],
-            'title': movie[1],
-            'backdrop_path': movie[16],  # Adjust based on your column order
-            'release_date': movie[5],
-            'genres': movie[3],
-            'vote_average': movie[4]
-        } for movie in recommended_movies
     ]
 
     return render_template('searched_movies.html', query=query, searched_movies=searched_movies, recommended_movies=recommended_movies)
