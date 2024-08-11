@@ -5,21 +5,28 @@
 <title>{{ movie.title }} - Details</title>
 <style>
 /* General Styling */
+/* General Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     background-color: #141414;
     color: #ffffff;
     margin: 0;
-    padding: 0;
+    padding: 20px;
+    line-height: 1.6;
 }
 
 h1, h2 {
     color: #e50914;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
 }
 
 /* Movie Details */
 img {
     margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 p {
@@ -29,15 +36,19 @@ p {
 label {
     display: block;
     margin: 10px 0;
+    font-weight: bold;
+    color: #bbbbbb;
 }
 
 input, textarea, button {
-    width: 100%;
+    width: calc(100% - 22px);
     padding: 10px;
     margin: 10px 0;
     border: none;
     border-radius: 5px;
     font-size: 16px;
+    background-color: #333333;
+    color: #ffffff;
 }
 
 input[type="number"] {
@@ -46,6 +57,7 @@ input[type="number"] {
 
 textarea {
     resize: vertical;
+    min-height: 100px;
 }
 
 /* Buttons */
@@ -53,19 +65,30 @@ button {
     background-color: #e50914;
     color: #ffffff;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.3s, transform 0.3s;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 button:hover {
     background-color: #f40612;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 /* Reviews Section */
 div {
-    background-color: #333333;
+    background-color: #1f1f1f;
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 strong {
@@ -77,19 +100,40 @@ button[type="submit"] {
     width: auto;
     display: inline;
     background-color: transparent;
-    color: black;
+    color: #e50914;
     border: none;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color 0.3s, transform 0.3s;
 }
 
 button[type="submit"]:hover {
-    color: blue;
+    color: #f40612;
+    transform: scale(1.1);
 }
 
 /* Forms */
 form {
     display: inline;
+}
+
+/* Additional Styling */
+a {
+    color: #e50914;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #f40612;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #1f1f1f;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 </style>
