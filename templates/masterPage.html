@@ -9,18 +9,33 @@
         .flash-error {
             color: red;
         }
-        .nav {
-            margin-top: 20px;
-            text-align: center;
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #000;
         }
-        .nav a {
-            margin: 0 15px;
+        
+        .nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav ul li {
+            display: inline;
+        }
+        
+        .nav ul li a {
+            color: #fff;
             text-decoration: none;
-            color: blue;
-        }
-        .nav input[type="text"] {
-            padding: 5px;
-            width: 200px;
+            font-size: 1rem;
         }
         .search-dropdown {
             position: relative;
