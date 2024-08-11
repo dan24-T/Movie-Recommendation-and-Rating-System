@@ -1,6 +1,75 @@
 {% extends "masterPage.html" %}
 
 {% block body %}
+<style>
+    /* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container styles */
+.movie-list, .movie-recommendations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Card styles */
+.movie-card {
+    background-color: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 200px;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+/* Image styles */
+.movie-card img {
+    border-bottom: 2px solid #e50914;
+    width: 100%;
+    height: auto;
+}
+
+/* Text styles */
+.movie-card h3, .movie-card h4 {
+    font-size: 1.2em;
+    margin: 10px;
+    color: #e50914;
+}
+
+.movie-card p {
+    font-size: 0.9em;
+    margin: 10px;
+}
+
+/* Link styles */
+.movie-card a {
+    display: block;
+    text-align: center;
+    background-color: #e50914;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.movie-card a:hover {
+    background-color: #b20710;
+}
+
+</style>
+
 <h1>Search Results for "{{ query }}"</h1>
 
     <div class="movie-list">
