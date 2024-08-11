@@ -57,8 +57,8 @@
         <a href="#">Profile</a>
         <a href="">Logout</a>
         
-        <!-- Search Bar -->
-        <div class="search-dropdown">
+         <!-- Search Bar -->
+         <div class="search-dropdown">
             <input type="text" id="movie-search" placeholder="Search for movies...">
             <div id="search-results" class="search-results"></div>
         </div>
@@ -68,45 +68,45 @@
 </body>
 <script>
    document.getElementById('movie-search').addEventListener('input', function() {
+    let query = this.value;
+    if (query.length > 2) {
+        fetch('/search_suggestions?query=' + query)
+            .then(response => response.json())
+            .then(data => {
+                let resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = '';
+                if (data.length > 0) {
+                    resultsDiv.style.display = 'block';
+                    data.slice(0, 7).forEach(movie => {  // Limit to 7 movies
+                        let link = document.createElement('a');
+                        link.href = '/searched_movies?query=' + movie.title;
+                        link.textContent = movie.title;
+                        resultsDiv.appendChild(link);
+                    });
+                } else {
+                    resultsDiv.style.display = 'none';
+                }
+            });
+    } else {
+        document.getElementById('search-results').style.display = 'none';
+    }
+});
+
+// Redirect when a movie is selected from the dropdown or enter is pressed
+document.getElementById('movie-search').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
         let query = this.value;
         if (query.length > 2) {
-            fetch('/search_suggestions?query=' + query)
-                .then(response => response.json())
-                .then(data => {
-                    let resultsDiv = document.getElementById('search-results');
-                    resultsDiv.innerHTML = '';
-                    if (data.length > 0) {
-                        resultsDiv.style.display = 'block';
-                        data.slice(0, 7).forEach(movie => {  // Limit to 7 movies
-                            let link = document.createElement('a');
-                            link.href = '/searched_movies?query=' + movie.title;
-                            link.textContent = movie.title;
-                            resultsDiv.appendChild(link);
-                        });
-                    } else {
-                        resultsDiv.style.display = 'none';
-                    }
-                });
-        } else {
-            document.getElementById('search-results').style.display = 'none';
+            window.location.href = '/searched_movies?query=' + query;
         }
-    });
+    }
+});
 
-    // Redirect when a movie is selected from the dropdown or enter is pressed
-    document.getElementById('movie-search').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            let query = this.value;
-            if (query.length > 2) {
-                window.location.href = '/searched_movies?query=' + query;
-            }
-        }
-    });
-
-    document.getElementById('search-results').addEventListener('click', function(event) {
-        if (event.target.tagName === 'A') {
-            window.location.href = event.target.href;
-        }
-    });
+document.getElementById('search-results').addEventListener('click', function(event) {
+    if (event.target.tagName === 'A') {
+        window.location.href = event.target.href;
+    }
+});
 
 </script>
 </html>

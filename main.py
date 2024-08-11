@@ -47,10 +47,10 @@ def home():
     movies_df = pd.read_sql_query("SELECT * FROM movies", conn)
 
     # Filter top-rated, action, animation, and comedy movies
-    top_rated = movies_df.sort_values(by='vote_average', ascending=False).head(5)
-    action_movies = movies_df[movies_df['genres'].str.contains('Action')].head(5)
-    animation_movies = movies_df[movies_df['genres'].str.contains('Animation')].head(5)
-    comedy_movies = movies_df[movies_df['genres'].str.contains('Comedy')].head(5)
+    top_rated = movies_df.sort_values(by='vote_average', ascending=False).head(10)
+    action_movies = movies_df[movies_df['genres'].str.contains('Action')].head(10)
+    animation_movies = movies_df[movies_df['genres'].str.contains('Animation')].head(10)
+    comedy_movies = movies_df[movies_df['genres'].str.contains('Comedy')].head(10)
 
     conn.close()
 
@@ -318,36 +318,50 @@ def search_suggestions():
 
     return jsonify([{'id': movie[0], 'title': movie[1]} for movie in movies])
 
-@app.route('/searched_movies')
+@app.route('/searched_movies/')
 def searched_movies():
     query = request.args.get('query', '')
     conn = sqlite3.connect('database.db')
-
-    # Get the searched movie
     cur = conn.cursor()
-    cur.execute("SELECT * FROM movies WHERE title = ?", (query,))
-    searched_movie = cur.fetchone()
 
-    if not searched_movie:
-        flash('Movie not found.', 'error')
-        return redirect(url_for('home'))
+    # Fetch the searched movie
+    cur.execute("SELECT * FROM movies WHERE title LIKE ?", ('%' + query + '%',))
+    searched_movies = cur.fetchall()
 
-    # Get the movie's genre for content-based filtering
-    cur.execute("SELECT genres FROM movies WHERE id = ?", (searched_movie[0],))
-    movie_genres = cur.fetchone()[0]
-
-    # Content-based filtering using the genres
-    cur.execute("""
-        SELECT * FROM movies
-        WHERE genres LIKE ?
-        AND id != ?
-        LIMIT 10
-    """, ('%' + movie_genres + '%', searched_movie[0]))
-    recommended_movies = cur.fetchall()
+    # Implement content-based filtering to find recommended movies
+    # For simplicity, this could be based on the genre or similar criteria.
+    recommended_movies = []
+    if searched_movies:
+        movie_genres = searched_movies[0][3]  # Assuming genres are in the 4th column
+        cur.execute("SELECT * FROM movies WHERE genres LIKE ? AND id != ?", ('%' + movie_genres + '%', searched_movies[0][0]))
+        recommended_movies = cur.fetchall()
 
     conn.close()
 
-    return render_template('searched_movies.html', movie=searched_movie, recommendations=recommended_movies)
+    # Convert the data to dictionaries (or leave as tuples if you're handling that in Jinja)
+    searched_movies = [
+        {
+            'id': movie[0],
+            'title': movie[1],
+            'backdrop_path': movie[16],  # Adjust based on your column order
+            'release_date': movie[5],
+            'genres': movie[3],
+            'vote_average': movie[4]
+        } for movie in searched_movies
+    ]
+
+    recommended_movies = [
+        {
+            'id': movie[0],
+            'title': movie[1],
+            'backdrop_path': movie[16],  # Adjust based on your column order
+            'release_date': movie[5],
+            'genres': movie[3],
+            'vote_average': movie[4]
+        } for movie in recommended_movies
+    ]
+
+    return render_template('searched_movies.html', query=query, searched_movies=searched_movies, recommended_movies=recommended_movies)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)
