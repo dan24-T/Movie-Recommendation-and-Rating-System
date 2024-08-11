@@ -1,7 +1,8 @@
-from flask import Flask, redirect, url_for, session, flash, render_template, request
+from flask import Flask, redirect, url_for, session, flash, render_template, request, jsonify
 import sqlite3
 import os
 import pandas as pd
+import json
 
 # Import Blueprints
 from auth import auth
@@ -306,6 +307,47 @@ def undo_downvote_review(movie_id, review_id):
     conn.close()
     return redirect(url_for('movie_details', movie_id=movie_id))
 
+@app.route('/search_suggestions')
+def search_suggestions():
+    query = request.args.get('query', '')
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+    cur.execute("SELECT id, title FROM movies WHERE title LIKE ?", ('%' + query + '%',))
+    movies = cur.fetchall()
+    conn.close()
+    
+    return jsonify([{'id': movie[0], 'title': movie[1]} for movie in movies])
+
+@app.route('/searched_movies')
+def searched_movies():
+    query = request.args.get('query', '')
+    conn = sqlite3.connect('database.db')
+
+    # Get the searched movie
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM movies WHERE title = ?", (query,))
+    searched_movie = cur.fetchone()
+
+    if not searched_movie:
+        flash('Movie not found.', 'error')
+        return redirect(url_for('home'))
+
+    # Get the movie's genre for content-based filtering
+    cur.execute("SELECT genres FROM movies WHERE id = ?", (searched_movie[0],))
+    movie_genres = cur.fetchone()[0]
+
+    # Content-based filtering using the genres
+    cur.execute("""
+        SELECT * FROM movies
+        WHERE genres LIKE ?
+        AND id != ?
+        LIMIT 10
+    """, ('%' + movie_genres + '%', searched_movie[0]))
+    recommended_movies = cur.fetchall()
+
+    conn.close()
+
+    return render_template('searched_movies.html', movie=searched_movie, recommendations=recommended_movies)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)

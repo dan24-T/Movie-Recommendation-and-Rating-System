@@ -1,0 +1,20 @@
+{% extends "masterPage.html" %}
+
+{% block body %}
+<h1>{{ movie[1] }}</h1>
+<p>{{ movie[2] }}</p>
+<p>Rating: {{ movie[3] }}</p>
+<img src="https://image.tmdb.org/t/p/w500/{{ movie[16] }}" alt="Backdrop">
+
+<h2>Recommended Movies</h2>
+<div class="movie-cards">
+    {% for rec_movie in recommendations %}
+    <div class="movie-card">
+        <h3>{{ rec_movie[1] }}</h3>
+        <p>Release Date: {{ rec_movie[5] }}</p>
+        <img src="https://image.tmdb.org/t/p/w92/{{ rec_movie[16] }}" alt="Poster">
+        <a href="{{ url_for('movie_details', movie_id=rec_movie[0]) }}">View Details</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

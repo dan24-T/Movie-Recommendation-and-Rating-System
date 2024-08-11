@@ -12,41 +12,83 @@
         .nav {
             margin-top: 20px;
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .nav .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-right: 50px;
-            color: black;
         }
         .nav a {
             margin: 0 15px;
             text-decoration: none;
             color: blue;
         }
-        .nav a:hover {
-            text-decoration: underline;
+        .nav input[type="text"] {
+            padding: 5px;
+            width: 200px;
+        }
+        .search-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .search-results {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1;
+            width: 100%;
+        }
+        .search-results a {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+        .search-results a:hover {
+            background-color: #ddd;
         }
     </style>
     <script src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
 <body>
     <div class="nav">
-        <div class="logo">Vmax</div>
         <a href="{{ url_for('home') }}">Home</a>
         <a href="#">About</a>
         <a href="#">Contact</a>
         <a href="{{ url_for('studio.studio_home') }}">Studio</a>
         <a href="#">Profile</a>
-        <!-- Logout Button -->
-        <form action="{{ url_for('auth.logout') }}" method="post">
-            <button type="submit">Logout</button>
-        </form>
+        <a href="">Logout</a>
+        
+        <!-- Search Bar -->
+        <div class="search-dropdown">
+            <input type="text" id="movie-search" placeholder="Search for movies...">
+            <div id="search-results" class="search-results"></div>
+        </div>
     </div>
     {% block sidebar %}{% endblock %}
     {% block body %}{% endblock %}
 </body>
+<script>
+    document.getElementById('movie-search').addEventListener('input', function() {
+        let query = this.value;
+        if (query.length > 2) {
+            fetch('/search_suggestions?query=' + query)
+                .then(response => response.json())
+                .then(data => {
+                    let resultsDiv = document.getElementById('search-results');
+                    resultsDiv.innerHTML = '';
+                    if (data.length > 0) {
+                        resultsDiv.style.display = 'block';
+                        data.forEach(movie => {
+                            let link = document.createElement('a');
+                            link.href = '/movie/' + movie.id;
+                            link.textContent = movie.title;
+                            resultsDiv.appendChild(link);
+                        });
+                    } else {
+                        resultsDiv.style.display = 'none';
+                    }
+                });
+        } else {
+            document.getElementById('search-results').style.display = 'none';
+        }
+    });
+</script>
 </html>

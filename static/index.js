@@ -99,3 +99,28 @@ function validateMatchPassword() {
     submitButton.disabled = !isValid;
     return isValid;
 }
+
+document.getElementById('movie-search').addEventListener('input', function() {
+    let query = this.value;
+    if (query.length > 2) {
+        fetch('/search_suggestions?query=' + query)
+            .then(response => response.json())
+            .then(data => {
+                let resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = '';
+                if (data.length > 0) {
+                    resultsDiv.style.display = 'block';
+                    data.forEach(movie => {
+                        let link = document.createElement('a');
+                        link.href = '/movie/' + movie.id;
+                        link.textContent = movie.title;
+                        resultsDiv.appendChild(link);
+                    });
+                } else {
+                    resultsDiv.style.display = 'none';
+                }
+            });
+    } else {
+        document.getElementById('search-results').style.display = 'none';
+    }
+});
