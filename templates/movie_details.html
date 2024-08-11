@@ -4,7 +4,7 @@
 {% block head %}
 <title>{{ movie.title }} - Details</title>
 <style>
-    body {
+body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     background-color: #141414;
     color: #e5e5e5;
@@ -76,14 +76,30 @@ div.review {
     padding: 20px;
     margin-top: 20px;
     border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
 }
 
-div.review strong {
+div.review img {
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+div.review-content {
+    flex-grow: 1;
+}
+
+div.review-content strong {
     font-size: 18px;
 }
 
-div.review p {
+div.review-content p {
     margin: 10px 0;
+}
+
+div.review-actions {
+    display: flex;
+    gap: 10px;
 }
 
 form[id^="upvote-form-"],
@@ -98,7 +114,6 @@ button[id^="downvote-button-"] {
     color: inherit;
     cursor: pointer;
     font-size: 16px;
-    margin-left: 10px;
 }
 
 button[id^="upvote-button-"]:hover,
