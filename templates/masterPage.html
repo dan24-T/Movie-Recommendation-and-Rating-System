@@ -65,18 +65,32 @@
 </head>
 <body>
     <div class="nav">
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-        <a href="{{ url_for('studio.studio_home') }}">Studio</a>
-        <a href="#">Profile</a>
-        <a href="">Logout</a>
+        <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+        </ul>
+        <ul>
+            <li><a href="#">About</a></li>
+        </ul>
+        <ul>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <ul>
+            <li><a href="{{ url_for('studio.studio_home') }}">Studio</a></li>
+        </ul>
+        <ul>
+            <li><a href="#">Profile</a></li>
+        </ul>
         
          <!-- Search Bar -->
          <div class="search-dropdown">
             <input type="text" id="movie-search" placeholder="Search for movies...">
             <div id="search-results" class="search-results"></div>
         </div>
+
+        <!-- Logout Button -->
+        <form action="{{ url_for('auth.logout') }}" method="post">
+            <button type="submit">Logout</button>
+        </form>
     </div>
     {% block sidebar %}{% endblock %}
     {% block body %}{% endblock %}
