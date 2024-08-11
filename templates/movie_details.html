@@ -4,121 +4,92 @@
 {% block head %}
 <title>{{ movie.title }} - Details</title>
 <style>
+/* General Styling */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #141414;
-    color: #e5e5e5;
+    color: #ffffff;
     margin: 0;
-    padding: 20px;
+    padding: 0;
 }
 
 h1, h2 {
-    color: #ffffff;
+    color: #e50914;
 }
 
+/* Movie Details */
 img {
-    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
 p {
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-form {
-    margin-top: 20px;
-    background-color: #333333;
-    padding: 20px;
-    border-radius: 8px;
+    margin: 10px 0;
 }
 
 label {
     display: block;
-    margin-bottom: 10px;
-    color: #b3b3b3;
+    margin: 10px 0;
 }
 
-input[type="number"],
-textarea {
+input, textarea, button {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin: 10px 0;
     border: none;
-    border-radius: 4px;
-    background-color: #444444;
-    color: #ffffff;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
+input[type="number"] {
+    width: auto;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Buttons */
 button {
     background-color: #e50914;
     color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    transition: background-color 0.2s;
 }
 
 button:hover {
     background-color: #f40612;
 }
 
-a {
+/* Reviews Section */
+div {
+    background-color: #333333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+strong {
     color: #e50914;
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
-div.review {
-    background-color: #222222;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 8px;
-    display: flex;
-    align-items: flex-start;
-}
-
-div.review img {
-    border-radius: 50%;
-    margin-right: 20px;
-}
-
-div.review-content {
-    flex-grow: 1;
-}
-
-div.review-content strong {
-    font-size: 18px;
-}
-
-div.review-content p {
-    margin: 10px 0;
-}
-
-div.review-actions {
-    display: flex;
-    gap: 10px;
-}
-
-form[id^="upvote-form-"],
-form[id^="downvote-form-"] {
+/* Upvote and Downvote Buttons */
+button[type="submit"] {
+    width: auto;
     display: inline;
-}
-
-button[id^="upvote-button-"],
-button[id^="downvote-button-"] {
-    background: none;
+    background-color: transparent;
+    color: black;
     border: none;
-    color: inherit;
     cursor: pointer;
-    font-size: 16px;
+    transition: color 0.2s;
 }
 
-button[id^="upvote-button-"]:hover,
-button[id^="downvote-button-"]:hover {
-    text-decoration: underline;
+button[type="submit"]:hover {
+    color: blue;
+}
+
+/* Forms */
+form {
+    display: inline;
 }
 
 </style>
