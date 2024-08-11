@@ -83,7 +83,7 @@ def movie_details(movie_id):
         'overview': movie[2],
         'vote_average': movie[11],
         'genres': movie[3],
-        'release_date': movie[5],
+        'release_date': movie[6],
         'backdrop_path': movie[16],
     }
 
@@ -342,9 +342,9 @@ def searched_movies():
             'id': movie[0],
             'title': movie[1],
             'backdrop_path': movie[16],  # Adjust based on your column order
-            'release_date': movie[5],
+            'release_date': movie[6],
             'genres': movie[3],
-            'vote_average': movie[4],
+            'vote_average': movie[11],
             'overview': movie[6]  # Assuming overview is the 7th column
         } for movie in searched_movies
     ]
