@@ -45,6 +45,7 @@
             background-color: #ddd;
         }
     </style>
+    
     <script src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
 <body>
@@ -66,7 +67,7 @@
     {% block body %}{% endblock %}
 </body>
 <script>
-    document.getElementById('movie-search').addEventListener('input', function() {
+   document.getElementById('movie-search').addEventListener('input', function() {
         let query = this.value;
         if (query.length > 2) {
             fetch('/search_suggestions?query=' + query)
@@ -76,9 +77,9 @@
                     resultsDiv.innerHTML = '';
                     if (data.length > 0) {
                         resultsDiv.style.display = 'block';
-                        data.forEach(movie => {
+                        data.slice(0, 7).forEach(movie => {  // Limit to 7 movies
                             let link = document.createElement('a');
-                            link.href = '/movie/' + movie.id;
+                            link.href = '/searched_movies?query=' + movie.title;
                             link.textContent = movie.title;
                             resultsDiv.appendChild(link);
                         });
@@ -90,5 +91,22 @@
             document.getElementById('search-results').style.display = 'none';
         }
     });
+
+    // Redirect when a movie is selected from the dropdown or enter is pressed
+    document.getElementById('movie-search').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            let query = this.value;
+            if (query.length > 2) {
+                window.location.href = '/searched_movies?query=' + query;
+            }
+        }
+    });
+
+    document.getElementById('search-results').addEventListener('click', function(event) {
+        if (event.target.tagName === 'A') {
+            window.location.href = event.target.href;
+        }
+    });
+
 </script>
 </html>

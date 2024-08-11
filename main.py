@@ -315,7 +315,7 @@ def search_suggestions():
     cur.execute("SELECT id, title FROM movies WHERE title LIKE ?", ('%' + query + '%',))
     movies = cur.fetchall()
     conn.close()
-    
+
     return jsonify([{'id': movie[0], 'title': movie[1]} for movie in movies])
 
 @app.route('/searched_movies')
