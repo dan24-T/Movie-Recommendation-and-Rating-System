@@ -3,12 +3,6 @@
 {% block head %}
 <title>Home</title>
 <style>
-    .card img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 4px;
-    }
-    
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -46,7 +40,7 @@ body {
     color: inherit;
 }
 
-#card {
+.card {
     background-color: #333;
     border-radius: 10px;
     overflow: hidden;
@@ -55,12 +49,12 @@ body {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-#card:hover {
+.card:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-#card img {
+.card img {
     width: 100%;
     height: 270px;  /* Adjust height for poster size */
     object-fit: cover;  /* Ensure the image covers the entire area */
@@ -68,7 +62,7 @@ body {
     border-bottom: 3px solid #ff0000;  /* Add a red border at the bottom of the image */
 }
 
-#card p {
+.card p {
     text-align: center;
     padding: 0.5rem 0;
     font-size: 1rem;
