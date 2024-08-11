@@ -73,6 +73,32 @@ def init_db():
         )
     ''')
     
+    # Create credits table
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            movie_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            rating INTEGER NOT NULL,
+            review_text TEXT,
+            upvotes INTEGER DEFAULT 0,
+            downvotes INTEGER DEFAULT 0,
+            FOREIGN KEY (movie_id) REFERENCES movies (id),
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
+    # Create a new table to track user votes
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS review_votes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            review_id INTEGER NOT NULL,
+            vote_type TEXT NOT NULL,  -- 'upvote' or 'downvote'
+            UNIQUE(user_id, review_id)
+        )
+    ''')
+    
     conn.commit()
     conn.close()
 

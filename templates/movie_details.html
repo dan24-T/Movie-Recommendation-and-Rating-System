@@ -6,12 +6,85 @@
 {% endblock %}
 
 {% block body %}
-<div class="movie-details-container">
-    <h1>{{ movie.title }}</h1>
-    <img src="https://image.tmdb.org/t/p/w500/{{ movie.backdrop_path }}" alt="{{ movie.title }}" style="width:100%; max-height:300px; object-fit:cover;">
-    <p><strong>Overview:</strong> {{ movie.overview }}</p>
-    <p><strong>Genres:</strong> {{ movie.genres | join(', ') }}</p>
-    <p><strong>Rating:</strong> {{ movie.vote_average }}</p>
-    <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
-</div>
+<!-- Movie Details -->
+<h1>{{ movie.title }}</h1>
+<img src="https://image.tmdb.org/t/p/w500/{{ movie.backdrop_path }}" alt="{{ movie.title }}" style="width:100%; max-height:300px; object-fit:cover;">
+<p>{{ movie.overview }}</p>
+<p>Rating: {{ movie.vote_average }} / 10</p>
+<p>Genres: {{ movie.genres | join(', ') }}</p>
+<p>Release Date: {{ movie.release_date }}</p>
+
+<!-- User's Review Form -->
+{% if 'username' in session %}
+    <form action="{{ url_for('add_review', movie_id=movie.id) }}" method="POST">
+        <label for="rating">Your Rating:</label>
+        <input type="number" name="rating" id="rating" min="1" max="10" value="5" required>
+
+        <label for="review_text">Your Review:</label>
+        <textarea name="review_text" id="review_text" rows="4" required></textarea>
+
+        <button type="submit">Submit Review</button>
+    </form>
+{% else %}
+    <p>You need to be <a href="{{ url_for('auth.login') }}">logged in</a> to add a review.</p>
+{% endif %}
+
+<!-- Display Existing Reviews -->
+<h2>Reviews:</h2>
+{% for review in reviews %}
+    <div>
+        <p><strong>{{ review[5] }}</strong> rated this movie {{ review[1] }} / 10</p>
+        <p>{{ review[2] }}</p>
+        <p>Upvotes: {{ review[3] }} | Downvotes: {{ review[4] }}</p>
+
+        {% if 'username' in session %}
+            <!-- Upvote Button -->
+            <form id="upvote-form-{{ review[0] }}" action="{{ url_for('upvote_review', movie_id=movie.id, review_id=review[0]) }}" method="POST" style="display:inline;">
+                <button type="submit" id="upvote-button-{{ review[0] }}" style="color: {% if review[6] == 'upvote' %}blue{% else %}black{% endif %};">
+                    Upvote
+                </button>
+            </form>
+
+            <!-- Downvote Button -->
+            <form id="downvote-form-{{ review[0] }}" action="{{ url_for('downvote_review', movie_id=movie.id, review_id=review[0]) }}" method="POST" style="display:inline;">
+                <button type="submit" id="downvote-button-{{ review[0] }}" style="color: {% if review[6] == 'downvote' %}blue{% else %}black{% endif %};">
+                    Downvote
+                </button>
+            </form>
+
+            <script>
+                document.getElementById('upvote-form-{{ review[0] }}').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    let button = document.getElementById('upvote-button-{{ review[0] }}');
+                    let currentColor = button.style.color;
+
+                    if (currentColor === 'black') {
+                        button.style.color = 'blue';
+                        this.submit();
+                    } else {
+                        button.style.color = 'black';
+                        // Send a request to undo the upvote
+                        window.location.href = "{{ url_for('undo_upvote_review', movie_id=movie.id, review_id=review[0]) }}";
+                    }
+                });
+
+                document.getElementById('downvote-form-{{ review[0] }}').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    let button = document.getElementById('downvote-button-{{ review[0] }}');
+                    let currentColor = button.style.color;
+
+                    if (currentColor === 'black') {
+                        button.style.color = 'blue';
+                        this.submit();
+                    } else {
+                        button.style.color = 'black';
+                        // Send a request to undo the downvote
+                        window.location.href = "{{ url_for('undo_downvote_review', movie_id=movie.id, review_id=review[0]) }}";
+                    }
+                });
+            </script>
+        {% endif %}
+    </div>
+{% endfor %}
+
 {% endblock %}

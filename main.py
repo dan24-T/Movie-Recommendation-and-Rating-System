@@ -1,7 +1,6 @@
-from flask import Flask, redirect, url_for, session, flash, render_template
-import os
+from flask import Flask, redirect, url_for, session, flash, render_template, request
 import sqlite3
-import json
+import os
 import pandas as pd
 
 # Import Blueprints
@@ -22,9 +21,7 @@ init_db()
 
 @app.route('/')
 def index():
-    """
-    Redirect to the appropriate page based on user session.
-    """
+    # Redirect to the appropriate page based on user session.
     if 'username' in session:
         if session.get('is_admin'):
             return redirect(url_for('admin.admin_home'))
@@ -33,25 +30,22 @@ def index():
 
 @app.route('/home/')
 def home():
-    """
-    Home route for users. Displays user details and sections for different movie categories.
-    """
+    # Home route for users. Displays user details and sections for different movie categories.
     if 'username' not in session:
         flash('Unauthorized access.', 'error')
         return redirect(url_for('auth.login'))
 
-    # Connect to the database
     conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
 
     # Fetch user details
-    cur = conn.cursor()
     cur.execute("SELECT username, first_name, last_name FROM users WHERE username = ?", (session['username'],))
     user = cur.fetchone()
 
     # Load movies into a DataFrame
     movies_df = pd.read_sql_query("SELECT * FROM movies", conn)
 
-    # Filter top rated, action, animation, and comedy movies
+    # Filter top-rated, action, animation, and comedy movies
     top_rated = movies_df.sort_values(by='vote_average', ascending=False).head(5)
     action_movies = movies_df[movies_df['genres'].str.contains('Action')].head(5)
     animation_movies = movies_df[movies_df['genres'].str.contains('Animation')].head(5)
@@ -60,7 +54,7 @@ def home():
     conn.close()
 
     return render_template(
-        'home.html', 
+        'home.html',
         user={'username': user[0], 'first_name': user[1], 'last_name': user[2]},
         top_rated=top_rated,
         action_movies=action_movies,
@@ -70,9 +64,6 @@ def home():
 
 @app.route('/movie/<int:movie_id>/')
 def movie_details(movie_id):
-    """
-    Route to display the details of a specific movie.
-    """
     conn = sqlite3.connect('database.db')
 
     # Fetch movie details by ID
@@ -84,22 +75,16 @@ def movie_details(movie_id):
         flash('Movie not found.', 'error')
         return redirect(url_for('home'))
 
-    # Convert the fetched data to a dictionary
     movie_details = {
         'id': movie[0],
         'title': movie[1],
         'overview': movie[2],
-        'vote_average': movie[3],
-        'genres': movie[4],  # Ensure this is a string
+        'vote_average': movie[11],
+        'genres': movie[3],
         'release_date': movie[5],
-        'backdrop_path': movie[16],  # Assuming you have a backdrop_path column
+        'backdrop_path': movie[16],
     }
 
-    # Debugging output to check the movie details
-    print("Movie Details:")
-    print(movie_details)
-
-    # Check if genres is already a list; if not, try to evaluate it
     if isinstance(movie_details['genres'], str):
         try:
             movie_details['genres'] = eval(movie_details['genres'])
@@ -107,13 +92,219 @@ def movie_details(movie_id):
             flash('Error parsing genres.', 'error')
             movie_details['genres'] = []
     elif not isinstance(movie_details['genres'], list):
-        # If it's not a string or list, log the error
         flash('Unexpected genres format.', 'error')
         movie_details['genres'] = []
 
+    # Fetch reviews for this movie, ordered by upvotes descending
+    cur.execute("""
+        SELECT r.id, r.rating, r.review_text, r.upvotes, r.downvotes, u.username,
+               (SELECT vote_type FROM review_votes WHERE user_id = ? AND review_id = r.id) as user_vote
+        FROM reviews r
+        JOIN users u ON r.user_id = u.id
+        WHERE r.movie_id = ?
+        ORDER BY r.upvotes DESC
+    """, (session.get('user_id'), movie_id))
+    reviews = cur.fetchall()
+
     conn.close()
 
-    return render_template('movie_details.html', movie=movie_details)
+    return render_template('movie_details.html', movie=movie_details, reviews=reviews)
+
+@app.route('/movie/<int:movie_id>/add_review', methods=['POST'])
+def add_review(movie_id):
+    """
+    Route to add a review for a movie.
+    """
+    if 'username' not in session:
+        flash('You need to be logged in to add a review.', 'error')
+        return redirect(url_for('auth.login'))
+
+    user_id = session['user_id']
+    rating = request.form.get('rating')
+    review_text = request.form.get('review_text')
+
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+
+    # Check if the user has already reviewed this movie
+    cur.execute("SELECT id FROM reviews WHERE user_id = ? AND movie_id = ?", (user_id, movie_id))
+    existing_review = cur.fetchone()
+
+    if existing_review:
+        flash('You have already reviewed this movie.', 'error')
+    else:
+        cur.execute("INSERT INTO reviews (movie_id, user_id, rating, review_text) VALUES (?, ?, ?, ?)",
+                    (movie_id, user_id, rating, review_text))
+
+        # Update movie's vote_count and vote_average
+        cur.execute("UPDATE movies SET vote_count = vote_count + 1 WHERE id = ?", (movie_id,))
+        cur.execute("SELECT AVG(rating) FROM reviews WHERE movie_id = ?", (movie_id,))
+        new_vote_average = cur.fetchone()[0]
+        cur.execute("UPDATE movies SET vote_average = ? WHERE id = ?", (new_vote_average, movie_id))
+
+        conn.commit()
+        flash('Review added successfully.', 'success')
+
+    conn.close()
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
+
+@app.route('/movie/<int:movie_id>/edit_review', methods=['POST'])
+def edit_review(movie_id):
+    """
+    Route to edit an existing review for a movie.
+    """
+    if 'username' not in session:
+        flash('You need to be logged in to edit a review.', 'error')
+        return redirect(url_for('auth.login'))
+
+    user_id = session['user_id']
+    rating = request.form.get('rating')
+    review_text = request.form.get('review_text')
+
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE reviews SET rating = ?, review_text = ?
+        WHERE user_id = ? AND movie_id = ?
+    """, (rating, review_text, user_id, movie_id))
+
+    # Update movie's vote_average
+    cur.execute("SELECT AVG(rating) FROM reviews WHERE movie_id = ?", (movie_id,))
+    new_vote_average = cur.fetchone()[0]
+    cur.execute("UPDATE movies SET vote_average = ? WHERE id = ?", (new_vote_average, movie_id))
+
+    conn.commit()
+    conn.close()
+
+    flash('Review updated successfully.', 'success')
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
+@app.route('/movie/<int:movie_id>/upvote/<int:review_id>', methods=['POST'])
+def upvote_review(movie_id, review_id):
+    if 'username' not in session:
+        flash('You need to be logged in to upvote.', 'error')
+        return redirect(url_for('auth.login'))
+
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+
+    # Get the user's ID
+    cur.execute("SELECT id FROM users WHERE username = ?", (session['username'],))
+    user_id = cur.fetchone()[0]
+
+    # Check if the user has already voted on this review
+    cur.execute("SELECT vote_type FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+    vote = cur.fetchone()
+
+    if vote:
+        if vote[0] == 'upvote':
+            # The user already upvoted, so undo the upvote
+            cur.execute("UPDATE reviews SET upvotes = upvotes - 1 WHERE id = ?", (review_id,))
+            cur.execute("DELETE FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+        elif vote[0] == 'downvote':
+            # The user downvoted, so undo the downvote and apply the upvote
+            cur.execute("UPDATE reviews SET downvotes = downvotes - 1 WHERE id = ?", (review_id,))
+            cur.execute("UPDATE reviews SET upvotes = upvotes + 1 WHERE id = ?", (review_id,))
+            cur.execute("UPDATE review_votes SET vote_type = 'upvote' WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+    else:
+        # The user hasn't voted yet, so apply the upvote
+        cur.execute("UPDATE reviews SET upvotes = upvotes + 1 WHERE id = ?", (review_id,))
+        cur.execute("INSERT INTO review_votes (user_id, review_id, vote_type) VALUES (?, ?, 'upvote')", (user_id, review_id))
+
+    conn.commit()
+    conn.close()
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
+@app.route('/movie/<int:movie_id>/downvote/<int:review_id>', methods=['POST'])
+def downvote_review(movie_id, review_id):
+    if 'username' not in session:
+        flash('You need to be logged in to downvote.', 'error')
+        return redirect(url_for('auth.login'))
+
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+
+    # Get the user's ID
+    cur.execute("SELECT id FROM users WHERE username = ?", (session['username'],))
+    user_id = cur.fetchone()[0]
+
+    # Check if the user has already voted on this review
+    cur.execute("SELECT vote_type FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+    vote = cur.fetchone()
+
+    if vote:
+        if vote[0] == 'downvote':
+            # The user already downvoted, so undo the downvote
+            cur.execute("UPDATE reviews SET downvotes = downvotes - 1 WHERE id = ?", (review_id,))
+            cur.execute("DELETE FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+        elif vote[0] == 'upvote':
+            # The user upvoted, so undo the upvote and apply the downvote
+            cur.execute("UPDATE reviews SET upvotes = upvotes - 1 WHERE id = ?", (review_id,))
+            cur.execute("UPDATE reviews SET downvotes = downvotes + 1 WHERE id = ?", (review_id,))
+            cur.execute("UPDATE review_votes SET vote_type = 'downvote' WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+    else:
+        # The user hasn't voted yet, so apply the downvote
+        cur.execute("UPDATE reviews SET downvotes = downvotes + 1 WHERE id = ?", (review_id,))
+        cur.execute("INSERT INTO review_votes (user_id, review_id, vote_type) VALUES (?, ?, 'downvote')", (user_id, review_id))
+
+    conn.commit()
+    conn.close()
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
+@app.route('/movie/<int:movie_id>/undo_upvote/<int:review_id>', methods=['GET'])
+def undo_upvote_review(movie_id, review_id):
+    if 'username' not in session:
+        flash('You need to be logged in to undo an upvote.', 'error')
+        return redirect(url_for('auth.login'))
+
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+
+    # Get the user's ID
+    cur.execute("SELECT id FROM users WHERE username = ?", (session['username'],))
+    user_id = cur.fetchone()[0]
+
+    # Check if the user has already upvoted this review
+    cur.execute("SELECT vote_type FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+    vote = cur.fetchone()
+
+    if vote and vote[0] == 'upvote':
+        # Remove the upvote
+        cur.execute("UPDATE reviews SET upvotes = upvotes - 1 WHERE id = ?", (review_id,))
+        cur.execute("DELETE FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+        conn.commit()
+
+    conn.close()
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
+
+@app.route('/movie/<int:movie_id>/undo_downvote/<int:review_id>', methods=['GET'])
+def undo_downvote_review(movie_id, review_id):
+    if 'username' not in session:
+        flash('You need to be logged in to undo a downvote.', 'error')
+        return redirect(url_for('auth.login'))
+
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+
+    # Get the user's ID
+    cur.execute("SELECT id FROM users WHERE username = ?", (session['username'],))
+    user_id = cur.fetchone()[0]
+
+    # Check if the user has already downvoted this review
+    cur.execute("SELECT vote_type FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+    vote = cur.fetchone()
+
+    if vote and vote[0] == 'downvote':
+        # Remove the downvote
+        cur.execute("UPDATE reviews SET downvotes = downvotes - 1 WHERE id = ?", (review_id,))
+        cur.execute("DELETE FROM review_votes WHERE user_id = ? AND review_id = ?", (user_id, review_id))
+        conn.commit()
+
+    conn.close()
+    return redirect(url_for('movie_details', movie_id=movie_id))
 
 
 if __name__ == '__main__':

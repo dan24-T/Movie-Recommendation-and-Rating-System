@@ -40,7 +40,7 @@
         <h2>Top Rated Movies</h2>
         <div class="cards">
             {% for _, row in top_rated.iterrows() %}
-                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                <a href="{{ url_for('movie_details', movie_id=row['id']) }}">
                     <div class="card">
                         <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
                         <p>{{ row['title'] }}</p>
@@ -55,7 +55,7 @@
         <h2>Action Movies</h2>
         <div class="cards">
             {% for _, row in action_movies.iterrows() %}
-                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                <a href="{{ url_for('movie_details', movie_id=row['id']) }}">
                     <div class="card">
                         <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
                         <p>{{ row['title'] }}</p>
@@ -70,7 +70,7 @@
         <h2>Animation Movies</h2>
         <div class="cards">
             {% for _, row in animation_movies.iterrows() %}
-                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                <a href="{{ url_for('movie_details', movie_id=row['id']) }}">
                     <div class="card">
                         <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
                         <p>{{ row['title'] }}</p>
@@ -85,7 +85,7 @@
         <h2>Comedy Movies</h2>
         <div class="cards">
             {% for _, row in comedy_movies.iterrows() %}
-                <a href="{{ url_for('movie_detail', movie_id=row['id']) }}">
+                <a href="{{ url_for('movie_details', movie_id=row['id']) }}">
                     <div class="card">
                         <img src="https://image.tmdb.org/t/p/w500/{{ row['poster_path'] }}" alt="{{ row['title'] }}">
                         <p>{{ row['title'] }}</p>
