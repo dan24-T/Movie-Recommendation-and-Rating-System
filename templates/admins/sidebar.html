@@ -146,6 +146,12 @@ main .content {
                 <li><a href="{{ url_for('admin.admin_users') }}">Users</a></li>
                 <li><a href="{{ url_for('admin.admin_movies') }}">Movies</a></li>
                 <li><a href="{{ url_for('admin.admin_studios') }}">Studios</a></li>
+                <li><a href="{{ url_for('admin_logs') }}">Logs</a></li>
+                <li>
+                    <form action="{{ url_for('auth.logout') }}" method="post">
+                        <button type="submit">Logout</button>
+                    </form>
+                </li>
             </ul>
         </nav>
         <!-- Logout Button -->

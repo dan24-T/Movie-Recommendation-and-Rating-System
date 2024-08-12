@@ -5,8 +5,18 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Users</h1>
+<link rel="stylesheet" href="/static/admin.css">
 
+    <h1>Users</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     <!-- Search and All Users Form -->
     <form id="searchForm" action="{{ url_for('admin.admin_users') }}" method="get">
         <input type="text" name="search" placeholder="Search users..." value="{{ request.args.get('search', '') }}">
@@ -54,7 +64,7 @@
     </table>
 
     <!-- Pagination Controls -->
-    <div>
+    <div style="display: flex; justify-content: center;">
         <ul>
             {% if page > 1 %}
                 <li><a href="{{ url_for('admin.admin_users', search=search_query, per_page=per_page, page=page-1) }}">Previous</a></li>

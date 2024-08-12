@@ -30,6 +30,13 @@ def index():
         return redirect(url_for('home'))
     return redirect(url_for('auth.login'))
 
+@app.route('/about')
+def about():
+    """
+    Render the about page.
+    """
+    return render_template('about.html')
+
 @app.route('/home/')
 def home():
     # Home route for users. Displays user details and sections for different movie categories.
@@ -350,6 +357,15 @@ def searched_movies():
     ]
 
     return render_template('searched_movies.html', query=query, searched_movies=searched_movies, recommended_movies=recommended_movies)
+
+@app.route('/admin/logs')
+def admin_logs():
+    conn = sqlite3.connect('database.db')
+    cur = conn.cursor()
+    cur.execute("SELECT logs.id, logs.event_type, logs.details, logs.timestamp, users.username FROM logs LEFT JOIN users ON logs.user_id = users.id ORDER BY logs.timestamp DESC")
+    logs = cur.fetchall()
+    conn.close()
+    return render_template('admins/admin_logs.html', logs=logs)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)

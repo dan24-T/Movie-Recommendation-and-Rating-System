@@ -21,7 +21,9 @@
 {% endblock %}
 
 {% block body %}
-<h2>Signup</h2>
+<link rel="stylesheet" href="/static/styl.css">
+
+<div class="container">
     <form method="post" action="/signup/" onsubmit="return validatePassword()">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -32,7 +34,8 @@
             </ul>
           {% endif %}
         {% endwith %}
-        
+        <h2>Signup</h2>
+
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
 
@@ -78,6 +81,10 @@
 
         <button type="submit" id="submit">Signup</button>
         <p id="message" style="color: red;"></p>
+        <p>Already have an account? <a href="/login/">Login here</a></p>
     </form>
-    <p>Already have an account? <a href="/login/">Login here</a></p>
+</div>
+
+    
+    
 {% endblock %}

@@ -5,133 +5,18 @@
 {% endblock %}
 
 {% block content %}
-<style>
-    /* CSS for Netflix-like Look */
-
-body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #141414;
-    color: #ffffff;
-    margin: 0;
-    padding: 0;
-}
-
-h1 {
-    color: #e50914;
-    text-align: center;
-    margin: 20px 0;
-}
-
-form {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-input[type="text"], select, button {
-    margin: 0 10px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-    border: none;
-}
-
-button {
-    background-color: #e50914;
-    color: #ffffff;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #f6121d;
-}
-
-table {
-    width: 80%;
-    margin: 20px auto;
-    border-collapse: collapse;
-}
-
-thead {
-    background-color: #e50914;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #333;
-}
-
-th a {
-    color: #ffffff;
-    text-decoration: none;
-}
-
-th a:hover {
-    text-decoration: underline;
-}
-
-img {
-    width: 50px;
-    height: auto;
-}
-
-a {
-    color: #e50914;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-form {
-    display: flex;
-}
-
-form button {
-    background-color: #e50914;
-    border: none;
-    color: white;
-    padding: 5px 10px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-form button:hover {
-    background-color: #f6121d;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.pagination span, .pagination strong, .pagination a {
-    margin: 0 5px;
-    padding: 10px;
-    font-size: 16px;
-}
-
-.pagination a {
-    color: #e50914;
-}
-
-.pagination a:hover {
-    text-decoration: underline;
-}
-
-</style>
+<link rel="stylesheet" href="/static/admin.css">
 
 <h1>Movies Management</h1>
-
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div>
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
 <!-- Search and Filter Form -->
 <form method="GET" action="{{ url_for('admin.admin_movies') }}">
     <input type="text" name="search" value="{{ search_query }}" placeholder="Search by title or overview...">
