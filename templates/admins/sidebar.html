@@ -6,7 +6,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <!-- Include CSS files, such as for styling -->
-    <link rel="stylesheet" href="">
+    <style>
+        /* Base styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #141414;
+    color: #ffffff;
+}
+
+/* Header styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #141414;
+    padding: 10px 20px;
+    border-bottom: 1px solid #333;
+}
+
+header .logo {
+    height: 40px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-right: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #e50914;
+}
+
+form button {
+    background-color: #e50914;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+form button:hover {
+    background-color: #f40612;
+}
+
+/* Sidebar styles */
+main {
+    display: flex;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    height: 100vh;
+    background-color: #141414;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-right: 1px solid #333;
+}
+
+nav ul {
+    flex-direction: column;
+}
+
+nav ul li {
+    margin-bottom: 20px;
+}
+
+nav ul li a {
+    display: block;
+    color: #ffffff;
+    font-size: 18px;
+    padding: 10px 0;
+}
+
+nav ul li a:hover {
+    color: #e50914;
+}
+
+main {
+    margin-left: 220px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+main .content {
+    padding: 20px;
+    background-color: #282828;
+    border-radius: 8px;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    nav {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1px solid #333;
+    }
+
+    nav ul {
+        flex-direction: row;
+    }
+
+    nav ul li {
+        margin-bottom: 0;
+        margin-right: 20px;
+    }
+
+    main {
+        margin-left: 0;
+    }
+}
+
+    </style>
 </head>
 <body>
     <header>
