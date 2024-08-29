@@ -1,4 +1,4 @@
-#Movie Recommendation and Rating System
+Movie Recommendation and Rating System
 Overview
 
 The Movie Recommendation and Rating System is a web application designed to provide users with personalized movie recommendations based on their viewing history, ratings, and reviews. It leverages content-based filtering techniques to suggest movies similar to those the user has rated or searched for. Additionally, the system includes features for users to review movies, upvote or downvote reviews, and manage movie studios. Administrators have the ability to manage users, studios, and review system logs.
