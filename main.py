@@ -39,7 +39,7 @@ def about():
 
 @app.route('/home/')
 def home():
-    # Home route for users. Displays user details and sections for different movie categories.
+    # Home route for users. Displays sections for different movie categories.
     if 'username' not in session:
         flash('Unauthorized access.', 'error')
         return redirect(url_for('auth.login'))

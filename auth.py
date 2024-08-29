@@ -94,7 +94,7 @@ def forgot_password():
             # Log the password reset request
             log_event('Password Reset Requested', user_id=user['id'], details=f'Password reset requested for email: {email}.')
             
-            # Here, you'd typically send an email with a reset link
+            # you'd typically send an email with a reset link
             return redirect(url_for('auth.reset_password'))
         else:
             flash('No account found with that email.', 'error')

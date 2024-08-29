@@ -19,7 +19,7 @@ def admin_home():
 @admin.route('/admin/users/')
 def admin_users():
     """
-    Admin users management route. Display all users for admin.
+    Admin users management route. Display all users.
     """
     if 'username' not in session or not session.get('is_admin'):
         flash('Unauthorized access.', 'error')

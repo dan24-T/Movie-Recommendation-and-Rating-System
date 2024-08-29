@@ -32,7 +32,7 @@ def get_recommendations(movie_id, db_path='database.db'):
     # Compute the cosine similarity matrix
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
-    # Get the index of the searched movie
+    # Get the index of the searched
     idx = df_movies.index[df_movies['id'] == movie_id].tolist()[0]
 
     # Get the pairwise similarity scores of all movies with the searched movie

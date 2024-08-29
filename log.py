@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import *
 
 def log_event(event_type, user_id=None, details=""):
     conn = sqlite3.connect('database.db')
