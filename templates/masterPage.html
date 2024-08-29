@@ -40,6 +40,8 @@
         .search-dropdown {
             position: relative;
             display: inline-block;
+            margin-bottom: 0;
+            background-color: #000;
         }
         .search-results {
             display: none;
@@ -177,7 +179,7 @@
     <script src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
 <body>
-    <div class="nav">
+    <nav class="nav">
         <p class="logo">VMAX</p>
         <ul>
             <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -199,7 +201,7 @@
         <form action="{{ url_for('auth.logout') }}" method="post">
             <button type="submit">Logout</button>
         </form>
-    </div>
+    </nav>
     {% block sidebar %}{% endblock %}
     {% block body %}{% endblock %}
 </body>

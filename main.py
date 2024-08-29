@@ -87,7 +87,7 @@ def movie_details(movie_id):
     movie_details = {
         'id': movie[0],
         'title': movie[1],
-        'overview': movie[2],
+        'overview': movie[5],
         'vote_average': movie[11],
         'genres': movie[3],
         'release_date': movie[6],
@@ -104,6 +104,16 @@ def movie_details(movie_id):
         flash('Unexpected genres format.', 'error')
         movie_details['genres'] = []
 
+    # Fetch user's review if it exists
+    cur.execute("""
+        SELECT r.rating, r.review_text 
+        FROM reviews r 
+        JOIN users u ON r.user_id = u.id 
+        WHERE r.movie_id = ? AND u.username = ?
+    """, (movie_id, session['username']))
+    user_review = cur.fetchone()    
+
+
     # Fetch reviews for this movie, ordered by upvotes descending
     cur.execute("""
         SELECT r.id, r.rating, r.review_text, r.upvotes, r.downvotes, u.username,
@@ -117,7 +127,7 @@ def movie_details(movie_id):
 
     conn.close()
 
-    return render_template('movie_details.html', movie=movie_details, reviews=reviews)
+    return render_template('movie_details.html', movie=movie_details, user_review=user_review, reviews=reviews)
 
 @app.route('/movie/<int:movie_id>/add_review', methods=['POST'])
 def add_review(movie_id):
